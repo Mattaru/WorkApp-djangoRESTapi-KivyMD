@@ -1,0 +1,7 @@
+.git
+*.pyc
+core/.env
+
+core/__pycache__
+authapp/__pycache__
+services/__pycache__
