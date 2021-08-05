@@ -1,12 +1,15 @@
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
 #:import Factory kivy.factory.Factory
 
-WindowManager:
-    ChooseRole:
-    LogIn:
-    Registration:
-    MainPage:
-    OrderDetail:
+
+OrderDetail:
+
+#WindowManager:
+#    ChooseRole:
+#    LogIn:
+#    Registration:
+#    MainPage:
+#    OrderDetail:
 
 
 <ChooseRole>:
@@ -61,8 +64,6 @@ WindowManager:
                 icon: 'location-enter'
                 specific_text_color: app.theme_cls.primary_light
                 on_action_button: root.go_to_login()
-
-
 
 <LogIn>:
     name: 'login'
@@ -264,7 +265,6 @@ WindowManager:
             MDList:
                 id: content
 
-
         MDBottomAppBar:
             MDToolbar:
                 left_action_items: [['home-outline', lambda x: root.test()], ['tune',root.test()]]
@@ -280,5 +280,40 @@ WindowManager:
     name: 'order_detail'
 
     BoxLayout:
-        id: gg
+        orientation: 'vertical'
 
+        MDToolbar:
+            title: 'Order'
+            elevation: 8
+            specific_text_color: app.theme_cls.primary_light
+
+        MDCard:
+            orientation: "vertical"
+            padding: "8dp", "8dp", "8dp", "8dp"
+            size_hint: 1, .5
+
+            MDLabel:
+                text: "Where does it come from?"
+                theme_text_color: "Secondary"
+                adaptive_height: True
+
+            MDSeparator:
+                height: "1dp"
+
+            ScrollView:
+                MDLabel:
+                    id: description
+                    size_hint: 1, None
+                    height: '400dp'
+                    text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which dont look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isnt anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.'
+                    multiline: True
+
+        MDBottomAppBar:
+            MDToolbar:
+                left_action_items: [['home-outline'], ['tune']]
+                right_action_items: [['account-outline'], ['chat-outline']]
+                mod: 'center'
+                type: 'bottom'
+                icon: 'plus'
+                specific_text_color: app.theme_cls.primary_light
+                on_action_button: root.test()

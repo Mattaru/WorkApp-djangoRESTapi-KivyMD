@@ -16,6 +16,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
+from widgets import OrderLIstItem
 
 
 from kivy.core.window import Window
@@ -211,18 +212,16 @@ class MainPage(Screen):
             self.ids.content.clear_widgets()
 
             for i in r.json():
-                print(i['id'])
-                item = TwoLineIconListItem(
+                item = OrderLIstItem(
+                    order_id=i['id'],
                     text=i['title'],
-                    secondary_text=i['description'],
-                    on_release=self.show_list(i['id'])
+                    on_release=self.show_list,
+                    icon="information-variant"
                 )
-                icon = IconLeftWidget(icon="information-variant")
-                item.add_widget(icon)
                 self.ids.content.add_widget(item)
 
-    def show_list(self, order_id):
-        settings.order_id = order_id
+    def show_list(self, instance):
+        settings.order_id = instance.order_id
         self.manager.current = 'order_detail'
         self.manager.transition.direction = 'left'
 
@@ -231,19 +230,22 @@ class MainPage(Screen):
 
 
 class OrderDetail(Screen):
-    def pre_enter(self):
+
+    def on_enter(self):
         data = {
             'username': 'testing4',
             'password': 'personaldata',
         }
         settings.get_jwt_token(data)
-
-    def on_enter(self):
         headers = {'Authorization': f'Bearer {settings.access_token}'}
         r = requests.get(settings.HOST_URL + f'order/{settings.order_id}', headers=headers)
 
-        label = Label(text=r.json()['user']['username'])
-        self.ids.gg.add_widget(label)
+        # self.ids.gg.add_widget()
+
+    def go_home(self):
+        self.manager.current = 'main_page'
+        self.manager.transition.direction = 'right'
+
 
 class WindowManager(ScreenManager):
     pass
