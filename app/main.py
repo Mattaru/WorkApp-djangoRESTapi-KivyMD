@@ -1,26 +1,30 @@
+import datetime
 import requests
 
 from kivy.properties import DictProperty, StringProperty
 from kivy.lang import Builder
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.gridlayout import GridLayout
 from kivy.core.text import LabelBase
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.scrollview import ScrollView
 from kivymd.app import MDApp
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine
+from kivymd.uix.gridlayout import MDGridLayout
+from kivymd.uix.tab import MDTabsBase
+from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.list import TwoLineIconListItem, IconRightWidget, IconLeftWidget
+from kivymd.uix.list import MDList
 from kivymd.uix.screen import Screen
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
-from widgets import OrderLIstItem
+from widgets import OrderLIstItem, OrderContent
 
 
 from kivy.core.window import Window
-Window.size = (300, 600)
+Window.size = (310, 600)
 
 
 settings = Settings('http://127.0.0.1:8000/')
@@ -56,11 +60,11 @@ class LogIn(Screen):
     #     if r.status_code == 200:
     #         self.manager.current = 'main_page'
     #         self.manager.transition.direction = 'left'
-    #
-    # def go_back(self):
-    #     """Перенаправляет на страницу выбора роли."""
-    #     self.manager.current = 'choose_role'
-    #     self.manager.transition.direction = 'left'
+    
+    def go_back(self):
+        """Перенаправляет на страницу выбора роли."""
+        self.manager.current = 'choose_role'
+        self.manager.transition.direction = 'right'
 
 
 class Registration(Screen):
@@ -192,7 +196,7 @@ class Registration(Screen):
     def go_back(self):
         """Перенаправляет на страницу выбора роли."""
         self.manager.current = 'choose_role'
-        self.manager.transition.direction = 'left'
+        self.manager.transition.direction = 'right'
 
 
 class MainPage(Screen):
@@ -209,24 +213,62 @@ class MainPage(Screen):
         r = requests.get(settings.HOST_URL, headers=headers)
 
         if r.status_code == 200:
-            self.ids.content.clear_widgets()
+            self.get_orders_tab_content(r.json())
+            
+    def get_orders_tab_content(self, data):
+        """Заполняет OrdersTab списком заказов с данными из запроса.
+        Аргументом принимает данные из запроса о заказах."""
+        # scroll = ScrollView()
+        # list = MDList()
 
-            for i in r.json():
-                item = OrderLIstItem(
-                    order_id=i['id'],
-                    text=i['title'],
-                    on_release=self.show_list,
-                    icon="information-variant"
+        # if data:
+
+        #     for i in data:
+        #         item = OrderLIstItem(
+        #             order_id=i['id'],
+        #             text=i['title'],
+        #             on_release=self.show_item,
+        #             icon="information-variant"
+        #         )
+        #         list.add_widget(item)
+
+        # scroll.add_widget(list)
+        # self.ids.orders.add_widget(scroll)
+
+        scroll = ScrollView()
+        grid = MDGridLayout(cols=1, adaptive_height=True, padding=['10dp', '0dp', '10dp', '0dp'])
+
+        if data:
+            for order in data:
+                row = MDExpansionPanel(
+                    icon="information-variant",
+                    content=OrderContent(data=order['description']) ,
+                    panel_cls=MDExpansionPanelThreeLine(
+                        text=order['title'],
+                        secondary_text=order['category'][0],
+                        tertiary_text=order['order_date'],
+                    )
                 )
-                self.ids.content.add_widget(item)
+                grid.add_widget(row)
 
-    def show_list(self, instance):
+        scroll.add_widget(grid)
+        self.ids.orders.add_widget(scroll)
+   
+    def show_item(self, instance):
         settings.order_id = instance.order_id
         self.manager.current = 'order_detail'
         self.manager.transition.direction = 'left'
 
     def test(self):
         pass
+
+
+class RegularTab(MDFloatLayout, MDTabsBase):
+    pass
+
+
+class OrdersTab(MDBoxLayout, MDTabsBase):
+    pass
 
 
 class OrderDetail(Screen):
