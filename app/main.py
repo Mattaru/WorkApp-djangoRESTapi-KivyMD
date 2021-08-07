@@ -20,7 +20,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
-from widgets import OrderLIstItem, OrderContent
+from widgets import OrderLIstItem, OrdersContent, ProfileCard
 
 
 from kivy.core.window import Window
@@ -213,36 +213,21 @@ class MainPage(Screen):
         r = requests.get(settings.HOST_URL, headers=headers)
 
         if r.status_code == 200:
-            self.get_orders_tab_content(r.json())
+            self.get_orders_tab_content(r.json()['Order'])
+            self.get_profile_tab_content(r.json()['User'][0])
             
-    def get_orders_tab_content(self, data):
+    def get_orders_tab_content(self, orders):
         """Заполняет OrdersTab списком заказов с данными из запроса.
         Аргументом принимает данные из запроса о заказах."""
-        # scroll = ScrollView()
-        # list = MDList()
-
-        # if data:
-
-        #     for i in data:
-        #         item = OrderLIstItem(
-        #             order_id=i['id'],
-        #             text=i['title'],
-        #             on_release=self.show_item,
-        #             icon="information-variant"
-        #         )
-        #         list.add_widget(item)
-
-        # scroll.add_widget(list)
-        # self.ids.orders.add_widget(scroll)
-
         scroll = ScrollView()
         grid = MDGridLayout(cols=1, adaptive_height=True, padding=['10dp', '0dp', '10dp', '0dp'])
 
-        if data:
-            for order in data:
+        if orders:
+
+            for order in orders:
                 row = MDExpansionPanel(
                     icon="information-variant",
-                    content=OrderContent(data=order['description']) ,
+                    content=OrdersContent(data=order['description']) ,
                     panel_cls=MDExpansionPanelThreeLine(
                         text=order['title'],
                         secondary_text=order['category'][0],
@@ -253,17 +238,34 @@ class MainPage(Screen):
 
         scroll.add_widget(grid)
         self.ids.orders.add_widget(scroll)
-   
-    def show_item(self, instance):
-        settings.order_id = instance.order_id
-        self.manager.current = 'order_detail'
-        self.manager.transition.direction = 'left'
+    
+    def get_profile_tab_content(self, user):
+        """Заполняет ProfileTab данными о залогиненом пользователе.
+         Аргументом принимает данные из о пользователе из запроса."""
+        scroll = ScrollView()
+        grid = MDGridLayout(cols=1, adaptive_height=True)
 
-    def test(self):
-        pass
+        if user:
+            card = ProfileCard(data=user)
+            grid.add_widget(card)
+            
+        scroll.add_widget(grid)
+        self.ids.profile.add_widget(scroll)
+
+    # def show_item(self, instance):
+    #     settings.order_id = instance.order_id
+    #     self.manager.current = 'order_detail'
+    #     self.manager.transition.direction = 'left'
+
+    # def test(self):
+    #     pass
 
 
-class RegularTab(MDFloatLayout, MDTabsBase):
+class OrdersTab(MDFloatLayout, MDTabsBase):
+    pass
+
+
+class ProfileTab(MDFloatLayout, MDTabsBase):
     pass
 
 
@@ -271,22 +273,22 @@ class OrdersTab(MDBoxLayout, MDTabsBase):
     pass
 
 
-class OrderDetail(Screen):
+# class OrderDetail(Screen):
 
-    def on_enter(self):
-        data = {
-            'username': 'testing4',
-            'password': 'personaldata',
-        }
-        settings.get_jwt_token(data)
-        headers = {'Authorization': f'Bearer {settings.access_token}'}
-        r = requests.get(settings.HOST_URL + f'order/{settings.order_id}', headers=headers)
+#     def on_enter(self):
+#         data = {
+#             'username': 'testing4',
+#             'password': 'personaldata',
+#         }
+#         settings.get_jwt_token(data)
+#         headers = {'Authorization': f'Bearer {settings.access_token}'}
+#         r = requests.get(settings.HOST_URL + f'order/{settings.order_id}', headers=headers)
 
-        # self.ids.gg.add_widget()
+#         self.ids.gg.add_widget()
 
-    def go_home(self):
-        self.manager.current = 'main_page'
-        self.manager.transition.direction = 'right'
+#     def go_home(self):
+#         self.manager.current = 'main_page'
+#         self.manager.transition.direction = 'right'
 
 
 class WindowManager(ScreenManager):

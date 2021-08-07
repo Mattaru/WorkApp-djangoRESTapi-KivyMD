@@ -9,7 +9,6 @@ WindowManager:
     LogIn:
     Registration:
     MainPage:
-    OrderDetail:
 
 
 <ChooseRole>:
@@ -266,20 +265,53 @@ WindowManager:
         MDTabs:
             id: content
 
-            RegularTab:
+            OrdersTab:
                 id: orders
                 title: ''
                 icon: 'home-outline'
 
+            ProfileTab:
+                id: profile
+                title: ''
+                icon: 'account'
 
-<OrderDetail>:
-    name: 'order_detail'
 
-    BoxLayout:
-        orientation: 'vertical'
+<ProfileCard>:
+    orientation: 'vertical'
+    padding: '10dp'
 
-        MDToolbar:
-            title: 'Orders'
-            elevation: 8
-            specific_text_color: app.theme_cls.primary_light
-            right_action_items: [['menu']]
+    MDLabel:
+        id: username
+
+    MDSeparator:
+        height: '4dp'
+
+    MDLabel:
+        id: first_name
+
+    MDLabel:
+        id: last_name
+
+    MDLabel:
+        id: email
+
+    MDLabel:
+        id: region
+
+    MDLabel:
+        id: city
+
+    MDLabel:
+        id: category
+
+# <OrderDetail>:
+#     name: 'order_detail'
+
+#     BoxLayout:
+#         orientation: 'vertical'
+
+#         MDToolbar:
+#             title: 'Orders'
+#             elevation: 8
+#             specific_text_color: app.theme_cls.primary_light
+#             right_action_items: [['menu']]
