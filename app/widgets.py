@@ -25,11 +25,11 @@ class OrderLIstItem(OneLineIconListItem):
         self.add_widget(icon)
 
 
-class OrdersContent(MDBoxLayout):
+class OrderContent(MDBoxLayout):
     """Создает выпадающую вкладку для экземпляра списка заказов.
     Аргументом принимает поле 'description' из запроса."""
     def __init__(self, data,  **kwargs) -> None:
-        super(OrdersContent, self).__init__(**kwargs)
+        super(OrderContent, self).__init__(**kwargs)
 
         self.orientation='vertical'
         self.adaptive_height = False
@@ -49,10 +49,16 @@ class ProfileCard(MDCard):
     def __init__(self, data, **kwargs) -> None:
         super(ProfileCard, self).__init__(**kwargs)
 
-        self.ids.username.text = data['username']
-        self.ids.first_name.text = data['first_name']
-        self.ids.last_name.text = data['last_name']
+        # self.ids.username.text = data['username']
+        self.ids.name.text = data['first_name'] + ' ' + data['last_name']
         self.ids.email.text = data['email']
+
+        self.ids.phone_number.text = data['profile']['phone_number']
+        self.ids.description.text = data['profile']['description']
+        self.ids.work_experience.text = data['profile']['work_experience']
+        self.ids.is_juridical.text = str(data['profile']['is_juridical'])
+
+
         self.ids.region.text = data['profile']['region']
         self.ids.city.text = data['profile']['city']
         if data['profile']['category']:     

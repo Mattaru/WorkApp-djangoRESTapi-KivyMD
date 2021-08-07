@@ -279,39 +279,158 @@ WindowManager:
 <ProfileCard>:
     orientation: 'vertical'
     padding: '10dp'
+    size_hint_y: None
+    height: '800dp'
 
-    MDLabel:
-        id: username
+    MDGridLayout:
+        cols: 2
+        adaptive_height: True
 
-    MDSeparator:
-        height: '4dp'
+        FitImage:
+            source: 'images/unknown.png'
+            size_hint: None, None
+            height: '100dp'
+            width: '100dp'
+            pos_hint: {'top': 1}
+            radius: 8, 8, 8, 8
 
-    MDLabel:
-        id: first_name
+        MDBoxLayout:
+            orientation: 'vertical'
+            adaptive_height: True
+            padding: '6dp', '0dp', '0dp', '0dp'
 
-    MDLabel:
-        id: last_name
+            MDGridLayout:
+                cols: 2
+                adaptive_height: True
 
-    MDLabel:
-        id: email
+                MDLabel:
+                    id: name
+                    bold: True
+                    size_hint_y: None
+                    height: '30dp'
+                    font_size: '24dp'
+                MDIconButton:
+                    icon: 'fountain-pen'
+                    user_font_size: '15dp'
 
-    MDLabel:
-        id: region
+            MDGridLayout:
+                cols: 2
+                adaptive_height: True
 
-    MDLabel:
-        id: city
+                MDLabel:
+                    id: phone_number
+                    font_size: '14dp'
+                MDIconButton:
+                    icon: 'fountain-pen'
+                    user_font_size: '15dp'
 
-    MDLabel:
-        id: category
+    MDGridLayout:
+        cols: 2
+        adaptive_height: True
 
-# <OrderDetail>:
-#     name: 'order_detail'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDLabel:
+                text: 'Почта:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: email
+                font_size: '14dp'
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
 
-#     BoxLayout:
-#         orientation: 'vertical'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDLabel:
+                text: 'Регион:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: region
+                font_size: '14dp'
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
 
-#         MDToolbar:
-#             title: 'Orders'
-#             elevation: 8
-#             specific_text_color: app.theme_cls.primary_light
-#             right_action_items: [['menu']]
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDLabel:
+                text: 'Город:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: city
+                font_size: '14dp'
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDLabel:
+                text: 'Юридическое лицо:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: is_juridical
+                font_size: '14dp'
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            adaptive_height: True
+            MDLabel:
+                text: 'Кратко о своей деятельности:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: description
+                font_size: '14dp'
+                adaptive_height: True
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDLabel:
+                text: 'Опыт работы:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: work_experience
+                font_size: '14dp'
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDLabel:
+                text: 'Область работы:'
+                font_size: '12dp'
+                bold: True
+                size_hint_y: None
+                height: '30dp'
+            MDLabel:
+                id: category
+                font_size: '14dp'
+        MDIconButton:
+            icon: 'fountain-pen'
+            user_font_size: '15dp'
