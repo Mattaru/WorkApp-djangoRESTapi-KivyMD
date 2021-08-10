@@ -1,0 +1,56 @@
+<LogIn>:
+    name: 'login'
+    padding: '20dp', '20dp', '20dp', '20dp'
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'Вход:'
+            elevation: 8
+            specific_text_color: app.theme_cls.primary_light
+
+        BoxLayout:
+            size_hint: 1, 0.5
+
+            MDLabel:
+                id: login_title
+                halign: 'center'
+                color: (0, 0, 0, 1)
+                text: root.message
+
+        GridLayout:
+            rows: 2
+            cols: 1
+            size_hint: 1, 1
+            padding: '20dp', '20dp', '20dp', '20dp'
+
+            MDTextField:
+                hint_text: 'логин'
+                helper_text: 'введите имя пользователя'
+                helper_text_mode: 'on_focus'
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                icon_right: 'lead-pencil'
+                icon_right_color: app.theme_cls.primary_color
+                on_text: root.form_data['username'] = self.text
+
+
+            MDTextField:
+                hint_text: 'пароль'
+                helper_text: 'введите пароль'
+                helper_text_mode: 'on_focus'
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                password: True
+                icon_right: 'lock-outline'
+                icon_right_color: app.theme_cls.primary_color
+                on_text: root.form_data['password'] = self.text
+
+
+        MDBottomAppBar:
+            MDToolbar:
+                left_action_items: [['arrow-left', lambda x: root.go_back()]]
+                mod: 'center'
+                type: 'bottom'
+                icon: 'location-enter'
+                specific_text_color: app.theme_cls.primary_light
+                on_action_button: root.validate_data(login_title)

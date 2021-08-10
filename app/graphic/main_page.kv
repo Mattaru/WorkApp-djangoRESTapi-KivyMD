@@ -1,0 +1,25 @@
+<MainPage>:
+    name: 'main_page'
+
+    BoxLayout:
+        orientation: 'vertical'
+
+
+        MDToolbar:
+            title: 'Orders'
+            elevation: 8
+            specific_text_color: app.theme_cls.primary_light
+            right_action_items: [['menu']]
+
+        MDTabs:
+            id: content
+
+            OrdersTab:
+                id: orders
+                title: ''
+                icon: 'home-outline'
+
+            ProfileTab:
+                id: profile
+                title: ''
+                icon: 'account'

@@ -10,6 +10,9 @@ from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.scrollview import ScrollView
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.card import MDCard
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.tab import MDTabsBase
@@ -268,12 +271,16 @@ class WindowManager(ScreenManager):
 class ForWorkApp(MDApp):
 
     def build(self):
-        kv = Builder.load_file('App.kv')
+        Builder.load_file('graphic/choose_role.kv')
+        Builder.load_file('graphic/login.kv')
+        Builder.load_file('graphic/registration.kv')
+        Builder.load_file('graphic/main_page.kv')
+        Builder.load_file('graphic/profile_card.kv')
 
-        self.theme_cls.primary_palette = 'Green'
+        self.theme_cls.primary_palette = 'Blue'
         self.theme_cls.accent_palette = "Red"
 
-        return kv
+        return Builder.load_file('App.kv')
 
     def test(self):
         pass

@@ -1,0 +1,52 @@
+<ChooseRole>:
+    name: 'choose_role'
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'Выберите роль:'
+            elevation: 8
+            specific_text_color: app.theme_cls.primary_light
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: '10dp'
+
+            MDRectangleFlatButton:
+                text: 'Заказчик'
+                bold: True
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                on_press:
+                    root.write_button_text(self)
+                    root.manager.current = 'registration'
+                    root.manager.transition.direction = 'left'
+
+            MDRectangleFlatButton:
+                text: 'Исполнитель'
+                bold: True
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                on_press:
+                    root.write_button_text(self)
+                    root.manager.current = 'registration'
+                    root.manager.transition.direction = 'left'
+
+            MDRectangleFlatButton:
+                text: 'Фирма'
+                bold: True
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                on_press:
+                    root.write_button_text(self)
+                    root.manager.current = 'registration'
+                    root.manager.transition.direction = 'left'
+        BoxLayout:
+            size_hint: 1, .5
+
+
+        MDBottomAppBar:
+            MDToolbar:
+                mod: 'center'
+                type: 'bottom'
+                icon: 'location-enter'
+                specific_text_color: app.theme_cls.primary_light
+                on_action_button: root.go_to_login()

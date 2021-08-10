@@ -1,0 +1,125 @@
+<Registration>:
+    name: 'registration'
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'Регистрация:'
+            elevation: 8
+            specific_text_color: app.theme_cls.primary_light
+
+        BoxLayout:
+            size_hint: 1, .25
+
+            Label:
+                id: registration_label
+                text: root.message
+
+        ScrollView:
+            GridLayout:
+                cols: 1
+                rows: 9
+                padding: '20dp', '0dp', '20dp', '0dp'
+                size_hint: 1, None
+                spacing: '10dp'
+                height: '400dp'
+
+                MDTextField:
+                    hint_text: 'имя пользователя'
+                    helper_text: 'введите имя пользователя'
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    icon_right: 'lead-pencil'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.form_data['username'] = self.text
+
+                MDTextField:
+                    hint_text: 'пароль'
+                    helper_text: 'введите пароль'
+                    password: True
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    icon_right: 'lock-outline'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.form_data['password'] = self.text
+
+                MDTextField:
+                    hint_text: 'пароль повторно'
+                    helper_text: 'введите пароль повторно'
+                    password: True
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    icon_right: 'lock-outline'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.form_data['re_password'] = self.text
+
+                MDTextField:
+                    hint_text: 'почта'
+                    helper_text: 'введите почту'
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    icon_right: 'at'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.form_data['email'] = self.text
+
+                MDLabel:
+                    text: 'Тип предоставляемых услуг:'
+                    size_hint: .3, .25
+                    halign: 'left'
+                    theme_text_color: "Custom"
+                    text_color: 0, 0, 0, .4
+
+                GridLayout:
+                    cols: 1
+                    rows: 3
+                    size_hint: 1, .25
+                    spacing: '10dp'
+
+                    BoxLayout:
+                        size_hint: .5, 1
+
+                        MDLabel:
+                            id: client_role
+                            text: 'первая'
+                            halign: 'right'
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, .4
+                        MDCheckbox:
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            on_press: root.get_category_data(self, client_role)
+
+                    BoxLayout:
+                        size_hint: .5, 1
+
+                        MDLabel:
+                            id: worker_role
+                            text: 'вторая'
+                            halign: 'right'
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, .4
+                        MDCheckbox:
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            on_press: root.get_category_data(self, worker_role)
+
+                    BoxLayout:
+                        size_hint: .5, 1
+
+                        MDLabel:
+                            id: firm_role
+                            text: 'третья'
+                            halign: 'right'
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, .4
+                        MDCheckbox:
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            on_press: root.get_category_data(self, firm_role)
+
+        MDBottomAppBar:
+            MDToolbar:
+                left_action_items: [['arrow-left', lambda x: root.go_back()]]
+                mod: 'center'
+                type: 'bottom'
+                icon: 'location-enter'
+                specific_text_color: app.theme_cls.primary_light
+                on_action_button: root.validate_data(registration_label)
