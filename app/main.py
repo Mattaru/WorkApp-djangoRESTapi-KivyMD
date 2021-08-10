@@ -23,7 +23,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
-from widgets import OrderLIstItem, OrderContent, ProfileCard
+from widgets import OrderLIstItem, OrderContent
 
 
 from kivy.core.window import Window
@@ -262,6 +262,83 @@ class OrdersTab(MDFloatLayout, MDTabsBase):
 
 class ProfileTab(MDFloatLayout, MDTabsBase):
     pass
+
+class ProfileCard(MDCard):
+    """Создает карту профиля пользователя.
+    Аргументоп ринимает данные о пользователе из запроса."""
+    dialog = None
+    dialog_content = None
+    instance = None
+
+    def __init__(self, data, **kwargs) -> None:
+        super(ProfileCard, self).__init__(**kwargs)
+
+        self.ids.first_name.text = data['first_name'] 
+        self.ids.last_name.text = data['last_name'] 
+        self.ids.email.text = data['email']
+
+        self.ids.phone_number.text = data['profile']['phone_number']
+        self.ids.description.text = data['profile']['description']
+        self.ids.work_experience.text = data['profile']['work_experience']
+        self.ids.is_juridical.text = str(data['profile']['is_juridical'])
+
+
+        self.ids.region.text = data['profile']['region']
+        self.ids.city.text = data['profile']['city']
+
+        if data['profile']['category']:     
+            self.ids.category.text = str(data['profile']['category'])
+        
+    def show_dialog(self, instance, field_name):
+        """Открывает диалоговое окно для смены данных профиля.
+         В качестве аргументов передает значение изменяемого поля и его название."""   
+        self.instance = instance
+        if not self.dialog:
+            self.dialog_content = Content(instance.text, field_name)
+            self.dialog = MDDialog(
+                title = 'Изменение данных:',
+                type = 'custom',
+                content_cls = self.dialog_content,
+                buttons = [
+                    MDFlatButton(
+                        text="ОТМЕНА",
+                        theme_text_color="Custom",
+                        text_color=(0, 0, 0, 1),
+                        on_release = self.close_dialog
+                    ),
+                    MDFlatButton(
+                        text="ОБНОВИТЬ",
+                        theme_text_color="Custom",
+                        text_color=(0, 0, 0, 1),
+                        on_release = self.update_data
+                    ),
+                ]
+            ) 
+        self.dialog.open()
+
+    def close_dialog(self, *args):
+        """Закрывает диалоговое окно и и спрасывает значение self.dialog на None."""
+        if self.dialog:
+            self.dialog.dismiss(force=True)
+            self.dialog = None
+
+    def update_data(self, *args):
+        # r = requests.put(settings.HOST_URL + 'user-update/', data=self.dialog_content.new_data)
+
+        # if r.status_code == 200:
+        #     self.ids.
+
+  
+class Content(MDBoxLayout):
+    old_data = StringProperty()
+    new_data = DictProperty()
+    field_name = StringProperty()
+
+    def __init__(self, data, field_name, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.old_data = data
+        self.field_name = field_name
 
 
 class WindowManager(ScreenManager):
