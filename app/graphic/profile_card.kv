@@ -68,7 +68,7 @@
                     icon: 'fountain-pen'
                     user_font_size: '15dp'
                     pos_hint: {'top': 1}
-                    on_release: root.show_dialog(phone_number, 'phone_number')
+                    on_release: root.show_dialog(phone_number, 'profile.phone_number')
 
     MDGridLayout:
         cols: 2
@@ -106,7 +106,7 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
-            on_release: root.show_dialog(region, 'region')
+            on_release: root.show_dialog(region, 'profile.region')
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -123,7 +123,7 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
-            on_release: root.show_dialog(city, 'city')
+            on_release: root.show_dialog(city, 'profile.city')
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -131,16 +131,11 @@
                 text: 'Юридическое лицо:'
                 font_size: '12dp'
                 bold: True
-                size_hint_y: None
-                height: '30dp'
-            MDLabel:
-                id: is_juridical
-                font_size: '14dp'
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            on_release: root.show_dialog(is_juridical, 'is_juridical')
+                pos_hint: {'center_x': .5, 'center_y': .5}
+        MDSwitch:
+            id: is_juridical
+            pos_hint: {'bottom': 0}
+            on_release: root.swich_change(self, is_juridical)
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -160,7 +155,7 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
-            on_release: root.show_dialog(description, 'description')
+            on_release: root.show_dialog(description, 'profile.description')
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -177,7 +172,7 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
-            on_release: root.show_dialog(work_experience, 'work_experience')
+            on_release: root.show_dialog(work_experience, 'profile.work_experience')
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -194,9 +189,9 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
-            on_release: root.show_dialog(category, 'category')
+            on_release: root.show_dialog(category, 'profile.category')
 
-<Content>:
+<ProfileDialogContent>:
     orientation: "vertical"
     spacing: "12dp"
     pos_hint: {'center_x': .5, 'center_y': .5}

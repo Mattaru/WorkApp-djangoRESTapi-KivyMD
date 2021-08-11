@@ -20,10 +20,11 @@ from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.list import MDList
 from kivymd.uix.screen import Screen
+from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
-from widgets import OrderLIstItem, OrderContent
+from widgets import OrderLIstItem, OrderContent, ProfileDialogContent
 
 
 from kivy.core.window import Window
@@ -263,6 +264,7 @@ class OrdersTab(MDFloatLayout, MDTabsBase):
 class ProfileTab(MDFloatLayout, MDTabsBase):
     pass
 
+
 class ProfileCard(MDCard):
     """Создает карту профиля пользователя.
     Аргументоп ринимает данные о пользователе из запроса."""
@@ -276,13 +278,10 @@ class ProfileCard(MDCard):
         self.ids.first_name.text = data['first_name'] 
         self.ids.last_name.text = data['last_name'] 
         self.ids.email.text = data['email']
-
         self.ids.phone_number.text = data['profile']['phone_number']
         self.ids.description.text = data['profile']['description']
         self.ids.work_experience.text = data['profile']['work_experience']
-        self.ids.is_juridical.text = str(data['profile']['is_juridical'])
-
-
+        self.ids.is_juridical.active = data['profile']['is_juridical']
         self.ids.region.text = data['profile']['region']
         self.ids.city.text = data['profile']['city']
 
@@ -293,8 +292,9 @@ class ProfileCard(MDCard):
         """Открывает диалоговое окно для смены данных профиля.
          В качестве аргументов передает значение изменяемого поля и его название."""   
         self.instance = instance
+
         if not self.dialog:
-            self.dialog_content = Content(instance.text, field_name)
+            self.dialog_content = ProfileDialogContent(instance.text, field_name)
             self.dialog = MDDialog(
                 title = 'Изменение данных:',
                 type = 'custom',
@@ -316,6 +316,18 @@ class ProfileCard(MDCard):
             ) 
         self.dialog.open()
 
+    def put_request(self, data):
+        """Отправляет запрос в базу для обновления данных о пользователе или профиле пользователя."""
+        data = {
+            'username': 'testing4',
+            'password': 'personaldata',
+        }
+        settings.get_jwt_token(data)
+        headers = {'Authorization': f'Bearer {settings.access_token}'}
+        r = requests.put(settings.HOST_URL + 'user-update/', headers=headers, data=data)
+
+        return r
+
     def close_dialog(self, *args):
         """Закрывает диалоговое окно и и спрасывает значение self.dialog на None."""
         if self.dialog:
@@ -323,22 +335,41 @@ class ProfileCard(MDCard):
             self.dialog = None
 
     def update_data(self, *args):
-        # r = requests.put(settings.HOST_URL + 'user-update/', data=self.dialog_content.new_data)
+        """Если запрос выполнен успешно, то меняет значение поля на новые данные.
+         Усли же нет, то выводит сообщение об ошибке."""
+        r = self.put_request(self.dialog_content.new_data)
+        field = self.dialog_content.field_name
 
-        # if r.status_code == 200:
-        #     self.ids.
+        if self.dialog_content.is_profile_field():
+            field = self.dialog_content.field_name.split('.')[1]
 
-  
-class Content(MDBoxLayout):
-    old_data = StringProperty()
-    new_data = DictProperty()
-    field_name = StringProperty()
+        if r.status_code == 200:
+            self.ids[field].text = self.dialog_content.new_data[self.dialog_content.field_name] 
+            self.dialog_content.reset_data()
+            self.dialog.dismiss(force=True)
+            self.dialog = None
+        else:
+            self.show_err_snackbar('Ошибка при отправлении.')
 
-    def __init__(self, data, field_name, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def swich_change(self, instance, *args):
+        """Отправляет запрос на изменение булеан поля."""
+        r = self.put_request(data={'profile.is_juridical': instance.active})
+        print(f'Status: {r.status_code} swich-status: {instance.active} data: {r}')
+        if r.status_code != 200:
+            instance.active = not instance.active
+            self.show_err_snackbar('Ошибка при отправлении.')
 
-        self.old_data = data
-        self.field_name = field_name
+    def show_err_snackbar(self, message):
+        """Открывает всплывающее окно с сообщением об ошибке."""
+        snack = Snackbar(
+            text=message,
+            snackbar_x="10dp",
+            snackbar_y="10dp",
+        )
+        snack.size_hint_x = (
+            Window.width - (snack.snackbar_x * 2)
+        ) / Window.width
+        snack.open()
 
 
 class WindowManager(ScreenManager):

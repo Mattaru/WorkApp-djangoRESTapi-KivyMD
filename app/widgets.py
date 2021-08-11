@@ -1,6 +1,7 @@
 import builtins
-from kivy.uix.scrollview import ScrollView
 
+from kivy.core.window import Window
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import DictProperty, StringProperty
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -11,11 +12,10 @@ from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.textfield import MDTextField
+from kivymd.uix.snackbar import Snackbar
 
 from kivymd.uix.label import MDLabel
 from kivymd.uix.list import OneLineIconListItem, IconLeftWidget, MDList 
-
-
 
 
 class OrderLIstItem(OneLineIconListItem):
@@ -47,4 +47,29 @@ class OrderContent(MDBoxLayout):
         self.add_widget(label)
         self.add_widget(button)
 
+        
+class ProfileDialogContent(MDBoxLayout):
+    old_data = StringProperty()
+    new_data = DictProperty()
+    field_name = StringProperty()
 
+    def __init__(self, data, field_name, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.old_data = data
+        self.field_name = field_name
+
+    def is_profile_field(self):
+        """Проверяет поле 'field_name', если оно относится к профилю пользователя, то возвращает True иначе False."""
+        result = self.field_name.split('.')
+
+        if len(result) == 2:
+            return True
+        
+        return False
+
+    def reset_data(self):
+        """Обнуляет все данные класса."""
+        self.old_data = ''
+        self.new_data = {}
+        self.field_name = ''
