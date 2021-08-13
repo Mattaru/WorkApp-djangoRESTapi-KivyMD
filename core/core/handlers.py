@@ -2,6 +2,11 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 
 
+def get_img_upload_path(instance, filename):
+    """Создает путь для загрузки файлов."""
+    return f'images/users/{instance.user.username}/avatar/{filename}'
+
+
 def create_user(data):
     """Создает пользователя по переданным данным.
      Возвращает созданные объект пользователя"""

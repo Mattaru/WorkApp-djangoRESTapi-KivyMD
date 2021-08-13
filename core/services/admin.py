@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Order, Profile, Message, Comment
+from .models import Category, Comment, Message, Order, Profile, SubCategory 
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Comment)
@@ -19,4 +24,9 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(SubCategory)
+class SubCategoryAdmin(admin.ModelAdmin):
     pass
