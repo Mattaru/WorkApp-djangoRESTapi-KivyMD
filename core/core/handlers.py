@@ -22,5 +22,4 @@ def create_user(data):
 def fill_user_profile(data, instance):
     """Заполнить данные профиля пользователя."""
     instance.profile.role = data['role']
-    instance.profile.category = data['category']
     instance.profile.save()
