@@ -12,14 +12,6 @@ from multiselectfield import MultiSelectField
 from core.handlers import get_img_upload_path
 
 
-# class CategoryChoices(models.TextChoices):
-#     FIRST = 'первая', _('первая')
-#     SECOND = 'вторая', _('вторая')
-#     THREED = 'третья', _('третья')
-
-#     __empty__ = _('не выбрана')
-
-
 class RoleChoices(models.TextChoices):
     CLIENT = 'заказчик', _('заказчик')
     WORKER = 'исполнитель', _('исполнитель')
@@ -60,8 +52,8 @@ class Profile(models.Model):
     work_experience = models.CharField(_('опыт работы'), max_length=255, null = True, blank = True)
     region = models.CharField(_('регион'), max_length=255, null = True, blank = True)
     city = models.CharField(_('город'), max_length=255, null = True, blank = True)
-    # category = MultiSelectField(_('категория'), choices=CategoryChoices.choices, max_length=355, blank=True, null=True)
     category = ManyToManyField(Category, verbose_name=_('вид работ'))
+    subcategory = ManyToManyField(SubCategory, verbose_name=_('подвид работ'))
     role = MultiSelectField(_('роль'), choices=RoleChoices.choices, max_length=113,
                             null=True, blank=True)
     is_juridical = models.BooleanField(_('юр.лицо'), default=False)
@@ -76,12 +68,15 @@ class Profile(models.Model):
 
 class Order(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    user = models.ForeignKey(User, verbose_name=_('пользователь'), on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, verbose_name=_('пользователь'), on_delete=models.CASCADE,
+                            blank=True, null=True)
     title = models.CharField(_('заголовок'), max_length=255, unique=True)
     slug = models.SlugField(max_length=355, blank=True, null=True, unique=True)
     description = models.TextField(_('описание'), blank=True)
-    # category = MultiSelectField(_('категория'), choices=CategoryChoices.choices, max_length=355, blank=True, null=True)
-    category = models.ForeignKey(Category, verbose_name=_('вид работ'), on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(Category, verbose_name=_('вид работ'), on_delete=models.CASCADE,
+                                blank=True, null=True)
+    subcategory = models.ForeignKey(SubCategory, verbose_name=_('подвид работ'), on_delete=models.CASCADE,
+                                    blank=True, null=True)
     order_date = models.DateTimeField(_('дата заказа'), auto_now_add=True)
     open = models.BooleanField(_('открыт'), default=True)
 

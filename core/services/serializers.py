@@ -8,24 +8,24 @@ from .models import Category, Comment, Order,  Message, Profile, RoleChoices, Su
 from core.handlers import create_user, fill_user_profile
 
 
-class SubCategorySerializer(serializers.ModelSerializer):
+class SubCategoryCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubCategory
         fields = ['name']
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    subcategorys = SubCategorySerializer(many=True, read_only=True)
+class CategoryCreateSerializer(serializers.ModelSerializer):
+    subcategory = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
 
     class Meta:
         model = Category
-        fields = ['name', 'subcategorys']
+        fields = ['name', 'subcategory']
 
 
 class ProfileCreateSerializer(serializers.ModelSerializer):
     role = serializers.MultipleChoiceField(choices=RoleChoices)
-    category = CategorySerializer(many=True, read_only=False, required=True)
+    category = CategoryCreateSerializer(many=True, read_only=False, required=True)
 
     class Meta:
         model = Profile
@@ -47,31 +47,57 @@ class UserCreateSerializer(serializers.ModelSerializer):
         profile_data = validated_data.pop('profile')
         fill_user_profile(profile_data, user)
         category_data = profile_data.pop('category')
-
+        
+        print(profile_data)
         print(category_data)
 
         for cat in category_data:
-            
-            category, created = Category.objects.get_or_create(name=cat['name'])
+
+            try:
+                category = Category.objects.get(name=cat['name'])
+            except Category.DoesNotExist:
+                category = Category.objects.create(name=cat['name'])
+
             user.profile.category.add(category)
 
             if 'subcategory' in cat.keys():
 
                 for subcat in cat['subcategory']:
-                    subcategory, created = SubCategory.objects.get_or_create(category=category,
-                     name=subcat)
+                    
+                    try:
+                        subcategory = SubCategory.objects.get(name=subcat['name'])
+                    except SubCategory.DoesNotExist:
+                        subcategory = SubCategory.objects.create(category=category, name=subcat['name'])
+  
+                    user.profile.subcategory.add(subcategory)
 
         return user
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ['name']
+
+
+class SubCategorySerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+
+    class Meta:
+        model = SubCategory
+        fields = ['name', 'category']
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     role = serializers.MultipleChoiceField(choices=RoleChoices)
     category = CategorySerializer(many=True, read_only=True)
+    subcategory = SubCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
         fields = ['avatar', 'role', 'phone_number', 'description', 'work_experience',
-         'category', 'region', 'city', 'is_juridical']
+         'category', 'subcategory', 'region', 'city', 'is_juridical']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -92,13 +118,14 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     region = serializers.CharField(max_length=255, required=False)
     city = serializers.CharField(max_length=255, required=False)
     role = serializers.MultipleChoiceField(choices=RoleChoices, required=False)
-    category = CategorySerializer(many=True, read_only=True)
+    category = CategorySerializer(many=True, read_only=True, required=False)
+    subcategory = SubCategorySerializer(many=True, read_only=True, required=False)
     is_juridical = serializers.BooleanField(required=False)
 
     class Meta:
         model = Profile
         fields = ['avatar', 'role', 'phone_number', 'description', 'work_experience',
-         'category', 'region', 'city', 'is_juridical']
+         'category', 'subcategory', 'region', 'city', 'is_juridical']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -131,13 +158,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=False)
     category = CategorySerializer()
+    subcategory = SubCategorySerializer()
     order_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M", required=False)
 
     class Meta:
         depth = 1
         model = Order
-        fields = ['id', 'uuid', 'user', 'title',
-                  'slug', 'description', 'order_date', 'category', 'open']
+        fields = ['user', 'uuid',  'title',
+                  'slug', 'description', 'order_date', 'category', 'subcategory', 'open']
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -22,7 +22,7 @@ from .serializers import (
 
 
 class OrderListView(ObjectMultipleModelAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_querylist(self):
         querylist = [
