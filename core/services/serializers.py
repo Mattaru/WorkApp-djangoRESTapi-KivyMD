@@ -15,21 +15,29 @@ class SubCategoryCreateSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
-class CategoryCreateSerializer(serializers.ModelSerializer):
-    subcategory = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
+class CategoryListSerializer(serializers.ModelSerializer):
+    subcategories = SubCategoryCreateSerializer(many=True, read_only=True)
 
     class Meta:
         model = Category
-        fields = ['name', 'subcategory']
+        fields = ['name', 'subcategories']
+
+
+class CategoryCreateSerializer(serializers.ModelSerializer):
+    subcategories = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
+
+    class Meta:
+        model = Category
+        fields = ['name', 'subcategories']
 
 
 class ProfileCreateSerializer(serializers.ModelSerializer):
     role = serializers.MultipleChoiceField(choices=RoleChoices)
-    category = CategoryCreateSerializer(many=True, read_only=False, required=True)
+    categories = CategoryCreateSerializer(many=True, read_only=False, required=True)
 
     class Meta:
         model = Profile
-        fields = ['role', 'category']
+        fields = ['role', 'categories']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -47,9 +55,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         profile_data = validated_data.pop('profile')
         fill_user_profile(profile_data, user)
         category_data = profile_data.pop('category')
-        
-        print(profile_data)
-        print(category_data)
 
         for cat in category_data:
 
@@ -91,13 +96,13 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     role = serializers.MultipleChoiceField(choices=RoleChoices)
-    category = CategorySerializer(many=True, read_only=True)
-    subcategory = SubCategorySerializer(many=True, read_only=True)
+    categories = CategorySerializer(many=True, read_only=True)
+    subcategories = SubCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
         fields = ['avatar', 'role', 'phone_number', 'description', 'work_experience',
-         'category', 'subcategory', 'region', 'city', 'is_juridical']
+         'categories', 'subcategories', 'region', 'city', 'is_juridical']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -118,14 +123,14 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     region = serializers.CharField(max_length=255, required=False)
     city = serializers.CharField(max_length=255, required=False)
     role = serializers.MultipleChoiceField(choices=RoleChoices, required=False)
-    category = CategorySerializer(many=True, read_only=True, required=False)
-    subcategory = SubCategorySerializer(many=True, read_only=True, required=False)
+    categories = CategorySerializer(many=True, read_only=True, required=False)
+    subcategories = SubCategorySerializer(many=True, read_only=True, required=False)
     is_juridical = serializers.BooleanField(required=False)
 
     class Meta:
         model = Profile
         fields = ['avatar', 'role', 'phone_number', 'description', 'work_experience',
-         'category', 'subcategory', 'region', 'city', 'is_juridical']
+         'categories', 'subcategories', 'region', 'city', 'is_juridical']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

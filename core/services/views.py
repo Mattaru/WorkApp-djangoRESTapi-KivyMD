@@ -11,18 +11,33 @@ from rest_framework.views import APIView
 
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 
-from .models import Order
+from .models import Category, Order, SubCategory
 from .serializers import (
-    CommentSerializer,
+    CategoryListSerializer,
     OrderSerializer,
-    MessageSerializer,
     UserSerializer,
     UserUpdateSerializer,
+    SubCategorySerializer
 )
 
 
+class CatategoriesListView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategoryListSerializer
+
+
+# class CatategoriesListView(ObjectMultipleModelAPIView):
+#     def get_querylist(self):
+#         querylist = [
+#             {'queryset': Category.objects.all(), 'serializer_class': CategoryListSerializer},
+#             {'queryset': SubCategory.objects.all(), 'serializer_class': SubCategorySerializer},
+#         ]
+
+#         return querylist
+
+
 class OrderListView(ObjectMultipleModelAPIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_querylist(self):
         querylist = [
@@ -32,7 +47,7 @@ class OrderListView(ObjectMultipleModelAPIView):
 
         return querylist
 
-
+# How much need? 
 class OrderView(RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
