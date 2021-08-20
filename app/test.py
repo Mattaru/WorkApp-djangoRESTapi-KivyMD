@@ -1,22 +1,17 @@
 from kivy.lang import Builder
-from kivy.uix.boxlayout import BoxLayout
 
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.list import OneLineAvatarIconListItem
 
 KV = '''
-<Content>
-    orientation: "vertical"
-    spacing: "12dp"
-    size_hint_y: None
-    height: "120dp"
+<ItemConfirm>
+    on_release: root.set_icon(check)
 
-    MDTextField:
-        hint_text: "City"
-
-    MDTextField:
-        hint_text: "Street"
+    CheckboxLeftWidget:
+        id: check
+        group: "check"
 
 
 MDFloatLayout:
@@ -28,8 +23,15 @@ MDFloatLayout:
 '''
 
 
-class Content(BoxLayout):
-    pass
+class ItemConfirm(OneLineAvatarIconListItem):
+    divider = None
+
+    def set_icon(self, instance_check):
+        instance_check.active = True
+        check_list = instance_check.get_widgets(instance_check.group)
+        for check in check_list:
+            if check != instance_check:
+                check.active = False
 
 
 class Example(MDApp):
@@ -41,9 +43,21 @@ class Example(MDApp):
     def show_confirmation_dialog(self):
         if not self.dialog:
             self.dialog = MDDialog(
-                title="Address:",
-                type="custom",
-                content_cls=Content(),
+                title="Phone ringtone",
+                type="confirmation",
+                items=[
+                    ItemConfirm(text="Callisto"),
+                    ItemConfirm(text="Luna"),
+                    ItemConfirm(text="Night"),
+                    ItemConfirm(text="Solo"),
+                    ItemConfirm(text="Phobos"),
+                    ItemConfirm(text="Diamond"),
+                    ItemConfirm(text="Sirena"),
+                    ItemConfirm(text="Red music"),
+                    ItemConfirm(text="Allergio"),
+                    ItemConfirm(text="Magic"),
+                    ItemConfirm(text="Tic-tac"),
+                ],
                 buttons=[
                     MDFlatButton(
                         text="CANCEL", text_color=self.theme_cls.primary_color

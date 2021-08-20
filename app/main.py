@@ -1,5 +1,6 @@
 import datetime
 import requests
+import json
 
 from kivy.properties import DictProperty, StringProperty
 from kivy.lang import Builder
@@ -13,18 +14,18 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.card import MDCard
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine
+from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine, MDExpansionPanelOneLine
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.list import MDList
+from kivymd.uix.list import OneLineListItem, MDList, OneLineIconListItem
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
-from widgets import OrderLIstItem, OrderContent, ProfileDialogContent
+from widgets import OrderContent, ProfileDialogFieldContent, ProfileDialogTextContent, ChooseCategoryTitle
 
 
 from kivy.core.window import Window
@@ -72,20 +73,30 @@ class LogIn(Screen):
 
 
 class Registration(Screen):
-    message = StringProperty('')
     background_color = [255, 255, 255, 0.6]
     form_data = DictProperty({})
     category_list = []
+    categories_data = None
+    dialog = None
+    dialog_content = None 
 
-    def validate_data(self, reg_label):
+    def on_enter(self):
+        r = requests.get(settings.HOST_URL + 'categories-list/')
+
+        if not r.status_code == 200:
+            self.show_err_snackbar('Сервер не доступен.')
+        else:
+            self.categories_data = r.json()
+
+    def validate_data(self):
         """Получить разрешение на отображение связанной страницы."""
         self.make_data_for_send()
-        check_data = self.check_form_data(reg_label)
+        check_data = self.check_form_data()
 
         if not check_data:
             return False
 
-        check_password = self.check_password(reg_label)
+        check_password = self.check_password()
 
         if not check_password:
             return False
@@ -95,15 +106,20 @@ class Registration(Screen):
             self.form_data['password']
         )
 
-        r = self.send_registration_request(self.form_data, reg_label)
+        r = self.send_registration_request()
 
-        if r.status_code == 201:
-            response, err = settings.get_jwt_token(settings.login_data)
+        # if not r.status_code == 201:
+        #     self.show_err_snackbar('Сервер не доступен.')
+        # else:
+        #     response, err = settings.get_jwt_token(settings.login_data)
 
-            if response.status_code == 200:
-                self.manager.current = 'main_page'
-                self.manager.transition.direction = 'left'
-                self.reset_data()
+        #     if not response.status_code == 200:
+        #         self.show_err_snackbar('Сервер не доступен.')
+        #     else:
+        #         self.manager.current = 'main_page'
+        #         self.manager.transition.direction = 'left'
+        #         self.reset_data()
+
 
     def get_category_data(self, instance, role_label):
         """"Получить данные формы по категории с привязанных кнопок.
@@ -115,82 +131,95 @@ class Registration(Screen):
 
     def make_data_for_send(self):
         """Добавляет данные о категориях и роли в общай словарь с информацией для отправки на сервер."""
-        self.form_data['profile.category'] = self.category_list
-        self.form_data['profile.role'] = settings.registration_role
+        categories = []
 
-    def check_form_data(self, reg_label):
+        if self.category_list:
+
+            for cat in self.category_list:
+                categories.append({'name': cat})
+
+            self.form_data['profile'] = {
+                'categories': categories,
+                'role': settings.registration_role
+            }
+
+    def check_form_data(self):
         """Проверяет наличие всей нужной информации для регистрации.
          Если введена не вся информация, то выводится сообщение об ошибке."""
         if not ('username' in self.form_data.keys()):
-            self.message = 'Введите логин.'
-            reg_label.color = (1, 0, 0, 1)
+            self.show_err_snackbar('Введите логин.')
+
             return False
+
         if not ('password' in self.form_data.keys()):
-            self.message = 'Введите пароль.'
-            reg_label.color = (1, 0, 0, 1)
+            self.show_err_snackbar('Введите пароль.')
+
             return False
+
         elif not ('re_password' in self.form_data.keys()):
-            self.message = 'Введите пароль повторно.'
-            reg_label.color = (1, 0, 0, 1)
+            self.show_err_snackbar('Введите пароль повторно.')
+
             return False
+
         elif not ('email' in self.form_data.keys()):
-            self.message = 'Введите почтовы адрес.'
-            reg_label.color = (1, 0, 0, 1)
+            self.show_err_snackbar('Введите почтовы адрес.')
+
             return False
-        elif not self.form_data['profile.category']:
-            self.message = 'Выберите вид работ.'
-            reg_label.color = (1, 0, 0, 1)
+
+        elif not ('profile' in self.form_data.keys()):
+            self.show_err_snackbar('Выберите вид работ.')
+
             return False
 
         return True
 
-    def check_password(self, reg_label):
+    def check_password(self):
         """Проверяет совпадают ли введенные пароли, а так же длинну пароля,
          если нет то выводит сообщение об ошибке."""
         if self.form_data['password'] != self.form_data['re_password']:
-            self.message = 'Введенные пароли не совпадают.'
-            reg_label.color = (1, 0, 0, 1)
+            self.show_err_snackbar('Введенные пароли не совпадают.')
+
             return False
+
         elif len(self.form_data['password']) < 8:
-            self.message = 'Пароль меньше 8 символов.'
-            reg_label.color = (1, 0, 0, 1)
+            self.show_err_snackbar('Пароль меньше 8 символов.')
+
             return False
 
         return True
 
-    def send_registration_request(self, form_data, reg_label):
+    def send_registration_request(self):
         """Отправить запрос к базе данных с информацией для регистрации пользователя.
          Если статус ответа не 200, то обрабатывает ошибки и выводит сообщения о них."""
-        r = requests.post(settings.HOST_URL + 'auth/users/', data=form_data)
+        json_data = json.loads(self.form_data)
 
-        email = ('email' in r.json().keys())
+        print(json.loads(self.form_data))
 
-        if email:
-            email_incorrect = r.json()['email'][0] == settings.error_messages['email_incorrect']
-            email_repeat = r.json()['email'][0] == settings.error_messages['email_repeat']
+        # r = requests.post(settings.HOST_URL + 'auth/users/', json=json_data)
 
-            if email and email_incorrect:
-                reg_label.color = (1, 0, 0, 1)
-                self.message = 'Не корректно введена почта.'
-            elif email and email_repeat:
-                reg_label.color = (1, 0, 0, 1)
-                self.message = 'Почта уже используется.'
+        # email = ('email' in r.json().keys())
 
-        username = ('username' in r.json().keys())
+        # if email:
+        #     email_incorrect = r.json()['email'][0] == settings.error_messages['email_incorrect']
+        #     email_repeat = r.json()['email'][0] == settings.error_messages['email_repeat']
 
-        if username:
-            username_already_used = r.json()['username'][0] == settings.error_messages['username_already_used']
-            username_incorrect = r.json()['username'][0] == settings.error_messages['username_incorrect']
+        #     if email and email_incorrect:
+        #         self.show_err_snackbar('Не корректно введена почта.')
+        #     elif email and email_repeat:
+        #         self.show_err_snackbar('Почта уже используется.')
 
-            if username and username_already_used:
-                reg_label.color = (1, 0, 0, 1)
-                self.message = 'Имя пользователя занято.'
+        # username = ('username' in r.json().keys())
 
-            if username and username_incorrect:
-                reg_label.color = (1, 0, 0, 1)
-                self.message = 'Не допустимые символы в имени.'
+        # if username:
+        #     username_already_used = r.json()['username'][0] == settings.error_messages['username_already_used']
+        #     username_incorrect = r.json()['username'][0] == settings.error_messages['username_incorrect']
 
-        return r
+        #     if username and username_already_used:
+        #         self.show_err_snackbar('Имя пользователя занято.')
+        #     elif username and username_incorrect:
+        #         self.show_err_snackbar('Не допустимые символы в имени.')
+
+        # return r
 
     def reset_data(self):
         """Обновить все данные класса."""
@@ -202,10 +231,103 @@ class Registration(Screen):
         self.manager.current = 'choose_role'
         self.manager.transition.direction = 'right'
 
+    def show_dialog(self):
+        """Открывает диалоговое окно с данными о категориях и подкатегориях."""
+        if not self.dialog:   
+            self.dialog = MDDialog(
+                size_hint = [0.9, None],
+                title='Виды работ:',
+                type = 'confirmation',
+                items = self.make_categories_list(),
+                buttons = [
+                    MDFlatButton(
+                        text="ОТМЕНА",
+                        theme_text_color="Custom",
+                        text_color=(0, 0, 0, 1),
+                        on_release = self.close_dialog
+                    ),
+                    MDFlatButton(
+                        text="ВЫБРАТЬ",
+                        theme_text_color="Custom",
+                        text_color=(0, 0, 0, 1),
+                        # on_release = self.update_data
+                    ),
+                ]
+            ) 
+            self.dialog.open()
+
+    def make_categories_list(self):
+        """Формирует checkbox список категорий исходя из данных запроса."""
+        items_list = []
+
+        for cat in self.categories_data:
+            
+            item = ChooseCategoryTitle(text='[size=14]' + cat['name'] + '[/size]')
+            items_list.append(item)
+
+            if 'subcategories' in cat.keys() and cat['subcategories']:
+
+                for subcat in cat['subcategories']:
+                    i = ChooseCategoriesContent(text='[size=12]' + subcat['name'] + '[/size]')
+                    items_list.append(i)  
+
+            else:
+                i = ChooseCategoriesContent(text='[size=12]' + cat['name'] + '[/size]')
+                items_list.append(i)
+
+        return items_list
+
+    def close_dialog(self, *args):
+        """Закрывает диалоговое окно и сбрасывает значение self.dialog на None."""
+        if self.dialog:
+            self.dialog.dismiss(force=True)
+            self.dialog = None
+            self.dialog_content = None
+
+    def show_err_snackbar(self, message):
+        """Открывает всплывающее окно с сообщением об ошибке."""
+        snack = Snackbar(
+            text=message,
+            snackbar_x="10dp",
+            snackbar_y="10dp",
+        )
+        snack.size_hint_x = (
+            Window.width - (snack.snackbar_x * 2)
+        ) / Window.width
+        snack.open()
+
+
+class ChooseCategoriesContent(OneLineIconListItem):
+    """Содержимое диалогового окна с названием категории и checkbox."""
+
+    def active_switch(self, instance):
+        """Переключает значение checkbox."""
+        if instance.active:
+            instance.active = False
+        else:
+            instance.active = True
+
+    def get_cat_data(self, instance, check):
+        if check.active:
+            category = {'name': self.get_cat_name(instance.text)}
+            settings.categories_list.append(category)
+        else:
+
+            for cat in settings.categories_list:
+
+                if cat['name'] == self.get_cat_name(instance.text):
+                    index = settings.categories_list.index(cat)
+                    settings.categories_list.pop(index)
+
+        print(settings.categories_list)
+
+    def get_cat_name(self, text):
+        name = text.split('[')[1].split(']')[1]
+
+        return name
+
 
 class MainPage(Screen):
-    def pre_enter(self):
-        pass
 
     def on_enter(self):
         data = {
@@ -292,9 +414,12 @@ class ProfileCard(MDCard):
         """Открывает диалоговое окно для смены данных профиля.
          В качестве аргументов передает значение изменяемого поля и его название."""   
         self.instance = instance
+        self.dialog_content = ProfileDialogFieldContent(instance.text, field_name)
 
-        if not self.dialog:
-            self.dialog_content = ProfileDialogContent(instance.text, field_name)
+        if field_name == 'profile.description':
+            self.dialog_content = ProfileDialogTextContent(instance.text, field_name)
+
+        if not self.dialog:   
             self.dialog = MDDialog(
                 title = 'Изменение данных:',
                 type = 'custom',
@@ -316,7 +441,7 @@ class ProfileCard(MDCard):
             ) 
         self.dialog.open()
 
-    def put_request(self, data):
+    def put_request(self, form_data):
         """Отправляет запрос в базу для обновления данных о пользователе или профиле пользователя."""
         data = {
             'username': 'testing4',
@@ -324,15 +449,16 @@ class ProfileCard(MDCard):
         }
         settings.get_jwt_token(data)
         headers = {'Authorization': f'Bearer {settings.access_token}'}
-        r = requests.put(settings.HOST_URL + 'user-update/', headers=headers, data=data)
+        r = requests.put(settings.HOST_URL + 'user-update/', headers=headers, data=form_data)
 
         return r
 
     def close_dialog(self, *args):
-        """Закрывает диалоговое окно и и спрасывает значение self.dialog на None."""
+        """Закрывает диалоговое окно и сбрасывает значение self.dialog на None."""
         if self.dialog:
             self.dialog.dismiss(force=True)
             self.dialog = None
+            self.dialog_content.reset_data()
 
     def update_data(self, *args):
         """Если запрос выполнен успешно, то меняет значение поля на новые данные.
@@ -353,8 +479,8 @@ class ProfileCard(MDCard):
 
     def swich_change(self, instance, *args):
         """Отправляет запрос на изменение булеан поля."""
-        r = self.put_request(data={'profile.is_juridical': instance.active})
-        print(f'Status: {r.status_code} swich-status: {instance.active} data: {r}')
+        r = self.put_request({'profile.is_juridical': instance.active})
+
         if r.status_code != 200:
             instance.active = not instance.active
             self.show_err_snackbar('Ошибка при отправлении.')

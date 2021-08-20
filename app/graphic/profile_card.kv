@@ -2,7 +2,6 @@
     orientation: 'vertical'
     padding: '10dp'
     size_hint_y: None
-    pos_hint: {'top': 1}
     height: '800dp'
 
     MDGridLayout:
@@ -14,6 +13,7 @@
             size_hint: None, None
             height: '100dp'
             width: '100dp'
+            size_hint_y: None
             pos_hint: {'top': 1}
             radius: 8, 8, 8, 8
 
@@ -32,13 +32,13 @@
                     MDLabel:
                         id: first_name
                         bold: True
-                        size_hint_y: None
-                        height: '5dp'
                         font_size: '24dp'
                     MDIconButton:
                         icon: 'fountain-pen'
                         user_font_size: '15dp'
-                        pos_hint: {'top': 1}
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
                         on_release: root.show_dialog(first_name, 'first_name')
 
                 MDBoxLayout:
@@ -47,13 +47,13 @@
                     MDLabel:
                         id: last_name
                         bold: True
-                        size_hint_y: None
-                        height: '15dp'
                         font_size: '24dp'
                     MDIconButton:
                         icon: 'fountain-pen'
                         user_font_size: '15dp'
-                        pos_hint: {'top': 1}
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
                         on_release: root.show_dialog(last_name, 'last_name')
 
             MDGridLayout:
@@ -68,6 +68,8 @@
                     icon: 'fountain-pen'
                     user_font_size: '15dp'
                     pos_hint: {'top': 1}
+                    theme_text_color: "Custom"
+                    text_color: app.theme_cls.primary_color
                     on_release: root.show_dialog(phone_number, 'profile.phone_number')
 
     MDGridLayout:
@@ -89,6 +91,8 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
             on_release: root.show_dialog(email, 'email')
 
         MDBoxLayout:
@@ -106,6 +110,8 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
             on_release: root.show_dialog(region, 'profile.region')
 
         MDBoxLayout:
@@ -123,6 +129,8 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
             on_release: root.show_dialog(city, 'profile.city')
 
         MDBoxLayout:
@@ -155,6 +163,8 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
             on_release: root.show_dialog(description, 'profile.description')
 
         MDBoxLayout:
@@ -172,6 +182,8 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
             on_release: root.show_dialog(work_experience, 'profile.work_experience')
 
         MDBoxLayout:
@@ -189,9 +201,11 @@
             icon: 'fountain-pen'
             user_font_size: '15dp'
             pos_hint: {'top': 1}
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
             on_release: root.show_dialog(category, 'profile.category')
 
-<ProfileDialogContent>:
+<ProfileDialogFieldContent>:
     orientation: "vertical"
     spacing: "12dp"
     pos_hint: {'center_x': .5, 'center_y': .5}
@@ -203,8 +217,26 @@
         hint_text: root.old_data
         helper_text: 'введите обновленные данные'
         helper_text_mode: 'on_focus'
+        multiline: True
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         icon_right: 'lead-pencil'
         icon_right_color: app.theme_cls.primary_color
         on_text: root.new_data[root.field_name] = self.text
 
+
+<ProfileDialogTextContent>:
+    orientation: "vertical"
+    spacing: "12dp"
+    pos_hint: {'center_x': .5, 'center_y': .5}
+    size_hint_y: None
+    height: "300dp"
+
+    ScrollView:
+        MDTextField:
+            id: dialog_text
+            text: root.old_data
+            helper_text: 'введите обновленные данные'
+            helper_text_mode: 'on_focus'
+            multiline: True
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            on_text: root.new_data[root.field_name] = self.text

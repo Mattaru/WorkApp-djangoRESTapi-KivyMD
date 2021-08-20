@@ -1,4 +1,5 @@
 import requests
+import json
 
 
 # Вспомогательный класс для хранения настроек, данных о аутентификации и сессис.
@@ -8,6 +9,7 @@ class Settings(object):
     refresh_token = ''
     registration_role = ''
     order_id = ''
+    categories_list = []
     error_messages = {
         'email_incorrect': "Введите правильный адрес электронной почты.",
         'email_repeat': "Значения поля должны быть уникальны.",

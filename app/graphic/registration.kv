@@ -1,7 +1,7 @@
 <Registration>:
     name: 'registration'
 
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
 
         MDToolbar:
@@ -9,15 +9,8 @@
             elevation: 8
             specific_text_color: app.theme_cls.primary_light
 
-        BoxLayout:
-            size_hint: 1, .25
-
-            Label:
-                id: registration_label
-                text: root.message
-
         ScrollView:
-            GridLayout:
+            MDGridLayout:
                 cols: 1
                 rows: 9
                 padding: '20dp', '0dp', '20dp', '0dp'
@@ -40,7 +33,7 @@
                     password: True
                     helper_text_mode: 'on_focus'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    icon_right: 'lock-outline'
+                    icon_right: 'eye-off'
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['password'] = self.text
 
@@ -50,7 +43,7 @@
                     password: True
                     helper_text_mode: 'on_focus'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    icon_right: 'lock-outline'
+                    icon_right: 'eye-off'
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['re_password'] = self.text
 
@@ -70,50 +63,14 @@
                     theme_text_color: "Custom"
                     text_color: 0, 0, 0, .4
 
-                GridLayout:
-                    cols: 1
-                    rows: 3
-                    size_hint: 1, .25
-                    spacing: '10dp'
+                MDBoxLayout:
+                    id: categorys
+                    orientation: 'vertical'
 
-                    BoxLayout:
-                        size_hint: .5, 1
-
-                        MDLabel:
-                            id: client_role
-                            text: 'первая'
-                            halign: 'right'
-                            theme_text_color: "Custom"
-                            text_color: 0, 0, 0, .4
-                        MDCheckbox:
-                            pos_hint: {'center_x': .5, 'center_y': .5}
-                            on_press: root.get_category_data(self, client_role)
-
-                    BoxLayout:
-                        size_hint: .5, 1
-
-                        MDLabel:
-                            id: worker_role
-                            text: 'вторая'
-                            halign: 'right'
-                            theme_text_color: "Custom"
-                            text_color: 0, 0, 0, .4
-                        MDCheckbox:
-                            pos_hint: {'center_x': .5, 'center_y': .5}
-                            on_press: root.get_category_data(self, worker_role)
-
-                    BoxLayout:
-                        size_hint: .5, 1
-
-                        MDLabel:
-                            id: firm_role
-                            text: 'третья'
-                            halign: 'right'
-                            theme_text_color: "Custom"
-                            text_color: 0, 0, 0, .4
-                        MDCheckbox:
-                            pos_hint: {'center_x': .5, 'center_y': .5}
-                            on_press: root.get_category_data(self, firm_role)
+                    MDIconButton:
+                        icon: "plus-circle"
+                        user_font_size: "30sp"
+                        on_release: root.show_dialog()
 
         MDBottomAppBar:
             MDToolbar:
@@ -122,4 +79,16 @@
                 type: 'bottom'
                 icon: 'location-enter'
                 specific_text_color: app.theme_cls.primary_light
-                on_action_button: root.validate_data(registration_label)
+                on_action_button: root.validate_data()
+
+
+<ChooseCategoriesContent>:
+    on_release: 
+        root.active_switch(check)
+        root.get_cat_data(self, check)
+
+    MDCheckbox:
+        id: check
+        size_hint: None, None
+        size: "16dp", "16dp"
+        pos_hint: {'center_x': .05, 'center_y': .5}   

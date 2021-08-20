@@ -9,13 +9,18 @@ from kivymd.uix.button import MDFloatingActionButton, MDFlatButton
 from kivymd.uix.card import MDCard, MDSeparator
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.gridlayout import MDGridLayout
-from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine
+from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine, MDExpansionPanelOneLine
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.textfield import MDTextField
+from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.snackbar import Snackbar
 
 from kivymd.uix.label import MDLabel
-from kivymd.uix.list import OneLineIconListItem, IconLeftWidget, MDList 
+from kivymd.uix.list import OneLineAvatarIconListItem, OneLineIconListItem, OneLineListItem, IRightBodyTouch, IconLeftWidget, MDList 
+
+
+class ChooseCategoryTitle(OneLineIconListItem):
+    pass
 
 
 class OrderLIstItem(OneLineIconListItem):
@@ -47,8 +52,14 @@ class OrderContent(MDBoxLayout):
         self.add_widget(label)
         self.add_widget(button)
 
-        
-class ProfileDialogContent(MDBoxLayout):
+# Wright mixin for the profile dialog content
+
+# class ProfileDialogMixin:
+#     pass
+
+
+class ProfileDialogFieldContent(MDBoxLayout):
+    """Отображает содержимое выбранного поля в диалоговом окне."""
     old_data = StringProperty()
     new_data = DictProperty()
     field_name = StringProperty()
@@ -60,7 +71,37 @@ class ProfileDialogContent(MDBoxLayout):
         self.field_name = field_name
 
     def is_profile_field(self):
-        """Проверяет поле 'field_name', если оно относится к профилю пользователя, то возвращает True иначе False."""
+        """Проверяет поле 'field_name', если оно относится к профилю пользователя,
+         то возвращает True иначе False."""
+        result = self.field_name.split('.')
+
+        if len(result) == 2:
+            return True
+        
+        return False
+
+    def reset_data(self):
+        """Обнуляет все данные класса."""
+        self.old_data = ''
+        self.new_data = {}
+        self.field_name = ''
+
+
+class ProfileDialogTextContent(MDBoxLayout):
+    """Отображает содержимое выбранного поля в диалоговом окне."""
+    old_data = StringProperty()
+    new_data = DictProperty()
+    field_name = StringProperty()
+
+    def __init__(self, data, field_name, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.old_data = data
+        self.field_name = field_name
+
+    def is_profile_field(self):
+        """Проверяет поле 'field_name', если оно относится к профилю пользователя,
+         то возвращает True иначе False."""
         result = self.field_name.split('.')
 
         if len(result) == 2:
