@@ -10,6 +10,7 @@ class Settings(object):
     registration_role = ''
     order_id = ''
     categories_list = []
+    subcategories_list = []
     error_messages = {
         'email_incorrect': "Введите правильный адрес электронной почты.",
         'email_repeat': "Значения поля должны быть уникальны.",

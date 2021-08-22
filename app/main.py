@@ -237,8 +237,8 @@ class Registration(Screen):
             self.dialog = MDDialog(
                 size_hint = [0.9, None],
                 title='Виды работ:',
-                type = 'confirmation',
-                items = self.make_categories_list(),
+                type = 'custom',
+                content_cls = CategoriesDialogContent(self.categories_data),
                 buttons = [
                     MDFlatButton(
                         text="ОТМЕНА",
@@ -255,27 +255,6 @@ class Registration(Screen):
                 ]
             ) 
             self.dialog.open()
-
-    def make_categories_list(self):
-        """Формирует checkbox список категорий исходя из данных запроса."""
-        items_list = []
-
-        for cat in self.categories_data:
-            
-            item = ChooseCategoryTitle(text='[size=14]' + cat['name'] + '[/size]')
-            items_list.append(item)
-
-            if 'subcategories' in cat.keys() and cat['subcategories']:
-
-                for subcat in cat['subcategories']:
-                    i = ChooseCategoriesContent(text='[size=12]' + subcat['name'] + '[/size]')
-                    items_list.append(i)  
-
-            else:
-                i = ChooseCategoriesContent(text='[size=12]' + cat['name'] + '[/size]')
-                items_list.append(i)
-
-        return items_list
 
     def close_dialog(self, *args):
         """Закрывает диалоговое окно и сбрасывает значение self.dialog на None."""
@@ -297,8 +276,43 @@ class Registration(Screen):
         snack.open()
 
 
+class CategoriesDialogContent(MDGridLayout):
+    """Наполняет диалоговое окно саиском категорий и для каждой категории выпадающим списком подкатегорий."""
+    def __init__(self, categories, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        for cat in categories:
+            item =  MDExpansionPanel(
+                content=CategoriesDialogExpansionContent(cat),
+                panel_cls=MDExpansionPanelOneLine(
+                    text='[size=14][b]' + cat['name'].upper() + '[/b][/size]'
+                )
+            )
+            self.ids.categories_box.add_widget(item)
+
+            
+class CategoriesDialogExpansionContent(MDGridLayout):
+    """Наполняет MDExpansionPanel списком подкатегорий с checkbox."""
+
+    def __init__(self, category, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        if 'subcategories' in category.keys() and category['subcategories']:
+
+            for subcat in category['subcategories']:
+                item = ChooseCategoriesContent(text='[size=12]' + subcat['name'] + '[/size]', category=False)
+                self.add_widget(item)
+        else:
+            i = ChooseCategoriesContent(text='[size=14]' + category['name'] + '[/size]', category=True)
+            self.add_widget(i)
+
 class ChooseCategoriesContent(OneLineIconListItem):
     """Содержимое диалогового окна с названием категории и checkbox."""
+
+    def __init__(self, category, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        self.category = category
 
     def active_switch(self, instance):
         """Переключает значение checkbox."""
@@ -308,20 +322,30 @@ class ChooseCategoriesContent(OneLineIconListItem):
             instance.active = True
 
     def get_cat_data(self, instance, check):
+        """Проверяет поле из которого передается информация, в зависимости от того подкатегория это или категория,
+         формирует список объектов с именами полей и сохраняет в настройках под соответствующим названием."""
+        if self.category:
+            list = settings.categories_list
+        else:
+            list = settings.subcategories_list
+
         if check.active:
             category = {'name': self.get_cat_name(instance.text)}
-            settings.categories_list.append(category)
+            list.append(category)
         else:
 
-            for cat in settings.categories_list:
+            for cat in list:
 
                 if cat['name'] == self.get_cat_name(instance.text):
-                    index = settings.categories_list.index(cat)
-                    settings.categories_list.pop(index)
+                    index = list.index(cat)
+                    list.pop(index)
 
-        print(settings.categories_list)
+        # Delete prints
+        print(f'categories: {settings.categories_list}')
+        print(f'subcategories: {settings.subcategories_list}')
 
     def get_cat_name(self, text):
+        """Обрабатывает текстовое поля виджета и возвращает название категории или подкатегории."""
         name = text.split('[')[1].split(']')[1]
 
         return name

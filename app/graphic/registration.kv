@@ -7,16 +7,17 @@
         MDToolbar:
             title: 'Регистрация:'
             elevation: 8
-            specific_text_color: app.theme_cls.primary_light
+            specific_text_color: 1, 1, 1, 1
 
         ScrollView:
             MDGridLayout:
                 cols: 1
-                rows: 9
-                padding: '20dp', '0dp', '20dp', '0dp'
+                rows: 10
+                padding: '20dp', '40dp', '20dp', '0dp'
                 size_hint: 1, None
                 spacing: '10dp'
-                height: '400dp'
+                height: '600dp'
+                # adaptive_height: True
 
                 MDTextField:
                     hint_text: 'имя пользователя'
@@ -56,21 +57,142 @@
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['email'] = self.text
 
-                MDLabel:
-                    text: 'Тип предоставляемых услуг:'
-                    size_hint: .3, .25
-                    halign: 'left'
-                    theme_text_color: "Custom"
-                    text_color: 0, 0, 0, .4
+                MDGridLayout:
+                    cols: 2
 
-                MDBoxLayout:
-                    id: categorys
-                    orientation: 'vertical'
+                    MDLabel:
+                        text: 'Тип предоставляемых услуг:'
+                        size_hint: .3, .25
+                        halign: 'left'
+                        padding: '0dp', '15dp'
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, .4
 
                     MDIconButton:
                         icon: "plus-circle"
                         user_font_size: "30sp"
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, 0.4
                         on_release: root.show_dialog()
+                
+                MDGridLayout:
+                    id: categorys
+                    cols: 1
+                    size_hint_y: None
+                    height: '200dp'
+
+                    ScrollView:
+                        MDGridLayout:
+                            cols: 2
+                            size_hint_y: None
+                            adaptive_height: True
+
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                text_color: 0, 0, 0, 0.4
+
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'x': 0, 'y': 0}
+                                text_color: 0, 0, 0, 0.4
+                            
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'x': 0, 'y': 0}
+                                text_color: 0, 0, 0, 0.4
+
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'x': 0, 'y': 0}
+                                text_color: 0, 0, 0, 0.4
+
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'x': 0, 'y': 0}
+                                text_color: 0, 0, 0, 0.4
+
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'x': 0, 'y': 0}
+                                text_color: 0, 0, 0, 0.4
+
+                            MDChip:
+                                id: 111
+                                text: 'Check with icon'
+                                icon: ''
+                                check: True
+                                color: 0, 0, 0, 0.4
+                                text_color: 1, 1, 1, 1
+
+                            MDIconButton:
+                                icon: "close"
+                                user_font_size: "16sp"
+                                theme_text_color: "Custom"
+                                pos_hint: {'x': 0, 'y': 0}
+                                text_color: 0, 0, 0, 0.4
+                    
 
         MDBottomAppBar:
             MDToolbar:
@@ -78,8 +200,26 @@
                 mod: 'center'
                 type: 'bottom'
                 icon: 'location-enter'
-                specific_text_color: app.theme_cls.primary_light
+                specific_text_color: 1, 1, 1, 1
                 on_action_button: root.validate_data()
+
+
+<CategoriesDialogContent>:
+    cols: 1
+    size_hint_y: None
+    height: '300dp'
+
+    ScrollView:
+        MDBoxLayout:
+            id: categories_box
+            orientation: 'vertical'
+            size_hint_y: None
+            adaptive_height: True      
+
+
+<CategoriesDialogExpansionContent>:
+    cols: 1
+    adaptive_height: True
 
 
 <ChooseCategoriesContent>:

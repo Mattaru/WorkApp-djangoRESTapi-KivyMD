@@ -4,14 +4,35 @@ from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import OneLineAvatarIconListItem
+from kivymd.uix.gridlayout import MDGridLayout
+from kivymd.uix.expansionpanel import MDExpansionPanelThreeLine, MDExpansionPanel
+from kivy.metrics import dp
 
 KV = '''
-<ItemConfirm>
-    on_release: root.set_icon(check)
 
-    CheckboxLeftWidget:
-        id: check
-        group: "check"
+<Content>:
+    cols: 1
+    adaptive_height: True
+
+    OneLineAvatarIconListItem:
+        text: '1111'
+
+    OneLineAvatarIconListItem:
+        text: '2222'
+
+
+<ItemConfirm>:
+    cols: 1
+    size_hint_y: None
+    height: '300dp'
+
+    ScrollView:
+        MDBoxLayout:
+            size_hint_y: None
+            adaptive_height: True
+            orientation: 'vertical'
+
+            id: box
 
 
 MDFloatLayout:
@@ -23,15 +44,26 @@ MDFloatLayout:
 '''
 
 
-class ItemConfirm(OneLineAvatarIconListItem):
-    divider = None
+class ItemConfirm(MDGridLayout):
+    
 
-    def set_icon(self, instance_check):
-        instance_check.active = True
-        check_list = instance_check.get_widgets(instance_check.group)
-        for check in check_list:
-            if check != instance_check:
-                check.active = False
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+        for i in range(10):
+            item =  MDExpansionPanel(
+                content=Content(),
+                panel_cls=MDExpansionPanelThreeLine(
+                    text="Text",
+                    secondary_text="Secondary text",
+                    tertiary_text="Tertiary text",
+                )
+            )
+            self.ids.box.add_widget(item)
+
+
+class Content(MDGridLayout):
+    pass
 
 
 class Example(MDApp):
@@ -44,20 +76,8 @@ class Example(MDApp):
         if not self.dialog:
             self.dialog = MDDialog(
                 title="Phone ringtone",
-                type="confirmation",
-                items=[
-                    ItemConfirm(text="Callisto"),
-                    ItemConfirm(text="Luna"),
-                    ItemConfirm(text="Night"),
-                    ItemConfirm(text="Solo"),
-                    ItemConfirm(text="Phobos"),
-                    ItemConfirm(text="Diamond"),
-                    ItemConfirm(text="Sirena"),
-                    ItemConfirm(text="Red music"),
-                    ItemConfirm(text="Allergio"),
-                    ItemConfirm(text="Magic"),
-                    ItemConfirm(text="Tic-tac"),
-                ],
+                type="custom",
+                content_cls = ItemConfirm(),
                 buttons=[
                     MDFlatButton(
                         text="CANCEL", text_color=self.theme_cls.primary_color
