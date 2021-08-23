@@ -16,18 +16,29 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.snackbar import Snackbar
 
 from kivymd.uix.label import MDLabel
-from kivymd.uix.list import OneLineAvatarIconListItem, OneLineIconListItem, OneLineListItem, IRightBodyTouch, IconLeftWidget, MDList 
+from kivymd.uix.list import (
+    OneLineAvatarIconListItem,
+    OneLineIconListItem,
+    OneLineListItem,
+    IRightBodyTouch,
+    IconLeftWidget,
+    MDList,
+    OneLineRightIconListItem
+)
+
+
+class CategoryListItem(OneLineRightIconListItem):
+    pass
 
 
 class ChooseCategoryTitle(OneLineIconListItem):
     pass
 
-
 class OrderLIstItem(OneLineIconListItem):
     """Дополнительно содержит в себе icon и принимает аргументы order_id и
     icon - название/путь к файлу иконки."""
     def __init__(self, order_id, icon, **kwargs) -> None:
-        super(OrderLIstItem, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.order_id = order_id
         self.icon = icon
 
@@ -39,7 +50,7 @@ class OrderContent(MDBoxLayout):
     """Создает выпадающую вкладку для экземпляра списка заказов.
     Аргументом принимает поле 'description' из запроса."""
     def __init__(self, data,  **kwargs) -> None:
-        super(OrderContent, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.orientation='vertical'
         self.adaptive_height = False

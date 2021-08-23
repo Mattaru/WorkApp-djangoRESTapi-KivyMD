@@ -25,7 +25,7 @@ from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.toolbar import MDBottomAppBar, MDToolbar
 
 from settings import Settings
-from widgets import OrderContent, ProfileDialogFieldContent, ProfileDialogTextContent, ChooseCategoryTitle
+from widgets import OrderContent, ProfileDialogFieldContent, ProfileDialogTextContent, ChooseCategoryTitle, CategoryListItem
 
 
 from kivy.core.window import Window
@@ -134,7 +134,6 @@ class Registration(Screen):
         categories = []
 
         if self.category_list:
-
             for cat in self.category_list:
                 categories.append({'name': cat})
 
@@ -148,27 +147,18 @@ class Registration(Screen):
          Если введена не вся информация, то выводится сообщение об ошибке."""
         if not ('username' in self.form_data.keys()):
             self.show_err_snackbar('Введите логин.')
-
             return False
-
-        if not ('password' in self.form_data.keys()):
+        elif not ('password' in self.form_data.keys()):
             self.show_err_snackbar('Введите пароль.')
-
             return False
-
         elif not ('re_password' in self.form_data.keys()):
             self.show_err_snackbar('Введите пароль повторно.')
-
             return False
-
         elif not ('email' in self.form_data.keys()):
             self.show_err_snackbar('Введите почтовы адрес.')
-
             return False
-
         elif not ('profile' in self.form_data.keys()):
             self.show_err_snackbar('Выберите вид работ.')
-
             return False
 
         return True
@@ -178,12 +168,9 @@ class Registration(Screen):
          если нет то выводит сообщение об ошибке."""
         if self.form_data['password'] != self.form_data['re_password']:
             self.show_err_snackbar('Введенные пароли не совпадают.')
-
             return False
-
         elif len(self.form_data['password']) < 8:
             self.show_err_snackbar('Пароль меньше 8 символов.')
-
             return False
 
         return True
@@ -250,7 +237,7 @@ class Registration(Screen):
                         text="ВЫБРАТЬ",
                         theme_text_color="Custom",
                         text_color=(0, 0, 0, 1),
-                        # on_release = self.update_data
+                        on_release = self.select_categories
                     ),
                 ]
             ) 
@@ -262,6 +249,20 @@ class Registration(Screen):
             self.dialog.dismiss(force=True)
             self.dialog = None
             self.dialog_content = None
+
+    def select_categories(self, *args):
+        """Добавляет список выбранных категорий и подкатегорий на экран регистранции."""
+        if settings.categories_list:
+            for category in settings.categories_list:
+                item = CategoryListItem(text='[size=12][b]' + category['name'].lower() + '[/b][/size]')
+                self.ids.categories.add_widget(item)
+
+        if settings.subcategories_list:
+            for subcategory in settings.subcategories_list:
+                item = CategoryListItem(text='[size=12][b]' + subcategory['name'].lower() + '[/b][/size]')
+                self.ids.categories.add_widget(item)
+
+        self.close_dialog()
 
     def show_err_snackbar(self, message):
         """Открывает всплывающее окно с сообщением об ошибке."""
@@ -280,7 +281,6 @@ class CategoriesDialogContent(MDGridLayout):
     """Наполняет диалоговое окно саиском категорий и для каждой категории выпадающим списком подкатегорий."""
     def __init__(self, categories, **kwargs) -> None:
         super().__init__(**kwargs)
-
         for cat in categories:
             item =  MDExpansionPanel(
                 content=CategoriesDialogExpansionContent(cat),
@@ -293,23 +293,21 @@ class CategoriesDialogContent(MDGridLayout):
             
 class CategoriesDialogExpansionContent(MDGridLayout):
     """Наполняет MDExpansionPanel списком подкатегорий с checkbox."""
-
     def __init__(self, category, **kwargs) -> None:
         super().__init__(**kwargs)
-
         if 'subcategories' in category.keys() and category['subcategories']:
-
             for subcat in category['subcategories']:
-                item = ChooseCategoriesContent(text='[size=12]' + subcat['name'] + '[/size]', category=False)
+                item = ChooseCategoriesContent(text='[size=12]' + subcat['name'] + '[/size]', category=category['name'])
                 self.add_widget(item)
         else:
-            i = ChooseCategoriesContent(text='[size=14]' + category['name'] + '[/size]', category=True)
+            i = ChooseCategoriesContent(text='[size=14]' + category['name'] + '[/size]')
             self.add_widget(i)
+
 
 class ChooseCategoriesContent(OneLineIconListItem):
     """Содержимое диалогового окна с названием категории и checkbox."""
 
-    def __init__(self, category, **kwargs) -> None:
+    def __init__(self, category=None, **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.category = category
@@ -322,27 +320,31 @@ class ChooseCategoriesContent(OneLineIconListItem):
             instance.active = True
 
     def get_cat_data(self, instance, check):
-        """Проверяет поле из которого передается информация, в зависимости от того подкатегория это или категория,
-         формирует список объектов с именами полей и сохраняет в настройках под соответствующим названием."""
-        if self.category:
-            list = settings.categories_list
-        else:
-            list = settings.subcategories_list
+        subcategory = {}
+        category = {}
 
+        if self.category:  
+            for i in settings.cat:
+                if i == self.category:
+                    subcategory = {'name':self.get_cat_name(instance.text)}
+                    break
+                else:
+                    category = {
+                        'name': self.category,
+                        'subcategories': [
+                            {'name': self.get_cat_name(instance.text)}
+                        ]   
+                    }    
+        else:
+            category = {
+                'name': self.get_cat_name(instance.text),
+                'subcategories': []
+            }
+        
         if check.active:
-            category = {'name': self.get_cat_name(instance.text)}
-            list.append(category)
-        else:
+            settings.cat.append(category)
 
-            for cat in list:
-
-                if cat['name'] == self.get_cat_name(instance.text):
-                    index = list.index(cat)
-                    list.pop(index)
-
-        # Delete prints
-        print(f'categories: {settings.categories_list}')
-        print(f'subcategories: {settings.subcategories_list}')
+        print(f'categories: {settings.cat}')
 
     def get_cat_name(self, text):
         """Обрабатывает текстовое поля виджета и возвращает название категории или подкатегории."""
@@ -373,7 +375,6 @@ class MainPage(Screen):
         grid = MDGridLayout(cols=1, adaptive_height=True, padding=['10dp', '0dp', '10dp', '0dp'])
 
         if orders:
-
             for order in orders:
                 row = MDExpansionPanel(
                     icon="information-variant",
