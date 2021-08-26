@@ -252,14 +252,19 @@ class Registration(Screen):
 
     def select_categories(self, *args):
         """Добавляет список выбранных категорий и подкатегорий на экран регистранции."""
+        self.ids.categories.clear_widgets()
+
         if settings.categories_list:
             for category in settings.categories_list:
-                item = CategoryListItem(text='[size=12][b]' + category['name'].lower() + '[/b][/size]')
-                self.ids.categories.add_widget(item)
-
-        if settings.subcategories_list:
-            for subcategory in settings.subcategories_list:
-                item = CategoryListItem(text='[size=12][b]' + subcategory['name'].lower() + '[/b][/size]')
+                cat = category[0]
+                if len(category) == 2:
+                    subcat = category[1]
+                else:
+                    subcat = ''
+                item = CategoryListItem(
+                    text='[size=12][b]' + cat.lower() + '[/b][/size]',
+                    secondary_text='[size=12][b]' + subcat.lower() + '[/b][/size]'
+                )
                 self.ids.categories.add_widget(item)
 
         self.close_dialog()
@@ -298,9 +303,19 @@ class CategoriesDialogExpansionContent(MDGridLayout):
         if 'subcategories' in category.keys() and category['subcategories']:
             for subcat in category['subcategories']:
                 item = ChooseCategoriesContent(text='[size=12]' + subcat['name'] + '[/size]', category=category['name'])
+                cat = (category['name'], subcat['name'])
+
+                if cat in settings.categories_list:
+                    item.ids.check.active = True
+
                 self.add_widget(item)
         else:
             i = ChooseCategoriesContent(text='[size=14]' + category['name'] + '[/size]')
+
+            cat= (category['name'],)
+            if cat in settings.categories_list:
+                i.ids.check.active = True
+
             self.add_widget(i)
 
 
@@ -320,31 +335,20 @@ class ChooseCategoriesContent(OneLineIconListItem):
             instance.active = True
 
     def get_cat_data(self, instance, check):
-        subcategory = {}
-        category = {}
-
-        if self.category:  
-            for i in settings.cat:
-                if i == self.category:
-                    subcategory = {'name':self.get_cat_name(instance.text)}
-                    break
-                else:
-                    category = {
-                        'name': self.category,
-                        'subcategories': [
-                            {'name': self.get_cat_name(instance.text)}
-                        ]   
-                    }    
+        """Формирует кортеж с данными о категории и подкатегории, если она есть.
+        Проверяет состояние активности у checkbox и добавляет либо удаляет сформированный кортеж в список категорий."""
+        if self.category:
+            category = (f'{self.category}', self.get_cat_name(instance.text)) 
         else:
-            category = {
-                'name': self.get_cat_name(instance.text),
-                'subcategories': []
-            }
-        
+            category = (f'{self.get_cat_name(instance.text)}',)
+                
         if check.active:
-            settings.cat.append(category)
+            settings.categories_list.append(category)
+        else:
+            index = settings.categories_list.index(category)
+            settings.categories_list.pop(index)
 
-        print(f'categories: {settings.cat}')
+        print(f'categories: {settings.categories_list}')
 
     def get_cat_name(self, text):
         """Обрабатывает текстовое поля виджета и возвращает название категории или подкатегории."""

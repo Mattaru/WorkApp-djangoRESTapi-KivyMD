@@ -9,9 +9,7 @@ class Settings(object):
     refresh_token = ''
     registration_role = ''
     order_id = ''
-    cat = []
     categories_list = []
-    subcategories_list = []
     error_messages = {
         'email_incorrect': "Введите правильный адрес электронной почты.",
         'email_repeat': "Значения поля должны быть уникальны.",

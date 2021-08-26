@@ -23,11 +23,11 @@ from kivymd.uix.list import (
     IRightBodyTouch,
     IconLeftWidget,
     MDList,
-    OneLineRightIconListItem
+    TwoLineRightIconListItem
 )
 
 
-class CategoryListItem(OneLineRightIconListItem):
+class CategoryListItem(TwoLineRightIconListItem):
     pass
 
 
