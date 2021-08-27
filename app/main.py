@@ -1,6 +1,5 @@
 import datetime
 import requests
-import json
 
 from kivy.properties import DictProperty, StringProperty
 from kivy.lang import Builder
@@ -89,7 +88,9 @@ class Registration(Screen):
             self.categories_data = r.json()
 
     def validate_data(self):
-        """Получить разрешение на отображение связанной страницы."""
+        """Формирует и проверяет данные для регистрации.
+        Если данные валидны, то отправляет запрос на регистрацию,
+        в случае успеха - перенаправляет на главнуюс траницу приложения."""
         self.make_data_for_send()
         check_data = self.check_form_data()
 
@@ -105,20 +106,20 @@ class Registration(Screen):
             self.form_data['username'],
             self.form_data['password']
         )
-
+        
         r = self.send_registration_request()
 
-        # if not r.status_code == 201:
-        #     self.show_err_snackbar('Сервер не доступен.')
-        # else:
-        #     response, err = settings.get_jwt_token(settings.login_data)
+        if not r.status_code == 201:
+            self.show_err_snackbar('Сервер не доступен.')
+        else:
+            response, err = settings.get_jwt_token(settings.login_data)
 
-        #     if not response.status_code == 200:
-        #         self.show_err_snackbar('Сервер не доступен.')
-        #     else:
-        #         self.manager.current = 'main_page'
-        #         self.manager.transition.direction = 'left'
-        #         self.reset_data()
+            if not response.status_code == 200:
+                self.show_err_snackbar('Сервер не доступен.')
+            else:
+                self.manager.current = 'main_page'
+                self.manager.transition.direction = 'left'
+                self.reset_data()
 
 
     def get_category_data(self, instance, role_label):
@@ -131,16 +132,23 @@ class Registration(Screen):
 
     def make_data_for_send(self):
         """Добавляет данные о категориях и роли в общай словарь с информацией для отправки на сервер."""
-        categories = []
-
-        if self.category_list:
-            for cat in self.category_list:
-                categories.append({'name': cat})
-
-            self.form_data['profile'] = {
-                'categories': categories,
-                'role': settings.registration_role
+        self.form_data['profile'] = {
+                'role': [settings.registration_role],
+                'categories': [],
+                'subcategories': []
             }
+
+        if settings.categories_list:
+            for cat in settings.categories_list:
+                if len(cat) != 2:
+                    category = {'name': cat[0]}
+                else:
+                    category = {'name': cat[0]}
+                    subcategory = {'name': cat[1]}
+                    self.form_data['profile']['subcategories'].append(subcategory)
+                
+                if not category in self.form_data['profile']['categories']:
+                    self.form_data['profile']['categories'].append(category)
 
     def check_form_data(self):
         """Проверяет наличие всей нужной информации для регистрации.
@@ -155,7 +163,7 @@ class Registration(Screen):
             self.show_err_snackbar('Введите пароль повторно.')
             return False
         elif not ('email' in self.form_data.keys()):
-            self.show_err_snackbar('Введите почтовы адрес.')
+            self.show_err_snackbar('Введите почтовый адрес.')
             return False
         elif not ('profile' in self.form_data.keys()):
             self.show_err_snackbar('Выберите вид работ.')
@@ -178,35 +186,28 @@ class Registration(Screen):
     def send_registration_request(self):
         """Отправить запрос к базе данных с информацией для регистрации пользователя.
          Если статус ответа не 200, то обрабатывает ошибки и выводит сообщения о них."""
-        json_data = json.loads(self.form_data)
+        r = requests.post(settings.HOST_URL + 'auth/users/', json=self.form_data)
+        email = ('email' in r.json().keys())
 
-        print(json.loads(self.form_data))
+        if email:
+            email_incorrect = r.json()['email'][0] == settings.error_messages['email_incorrect']
+            email_repeat = r.json()['email'][0] == settings.error_messages['email_repeat']
+            if email and email_incorrect:
+                self.show_err_snackbar('Не корректно введена почта.')
+            elif email and email_repeat:
+                self.show_err_snackbar('Почта уже используется.')
 
-        # r = requests.post(settings.HOST_URL + 'auth/users/', json=json_data)
+        username = ('username' in r.json().keys())
 
-        # email = ('email' in r.json().keys())
+        if username:
+            username_already_used = r.json()['username'][0] == settings.error_messages['username_already_used']
+            username_incorrect = r.json()['username'][0] == settings.error_messages['username_incorrect']
+            if username and username_already_used:
+                self.show_err_snackbar('Имя пользователя занято.')
+            elif username and username_incorrect:
+                self.show_err_snackbar('Не допустимые символы в имени.')
 
-        # if email:
-        #     email_incorrect = r.json()['email'][0] == settings.error_messages['email_incorrect']
-        #     email_repeat = r.json()['email'][0] == settings.error_messages['email_repeat']
-
-        #     if email and email_incorrect:
-        #         self.show_err_snackbar('Не корректно введена почта.')
-        #     elif email and email_repeat:
-        #         self.show_err_snackbar('Почта уже используется.')
-
-        # username = ('username' in r.json().keys())
-
-        # if username:
-        #     username_already_used = r.json()['username'][0] == settings.error_messages['username_already_used']
-        #     username_incorrect = r.json()['username'][0] == settings.error_messages['username_incorrect']
-
-        #     if username and username_already_used:
-        #         self.show_err_snackbar('Имя пользователя занято.')
-        #     elif username and username_incorrect:
-        #         self.show_err_snackbar('Не допустимые символы в имени.')
-
-        # return r
+        return r
 
     def reset_data(self):
         """Обновить все данные класса."""
@@ -311,8 +312,8 @@ class CategoriesDialogExpansionContent(MDGridLayout):
                 self.add_widget(item)
         else:
             i = ChooseCategoriesContent(text='[size=14]' + category['name'] + '[/size]')
-
             cat= (category['name'],)
+
             if cat in settings.categories_list:
                 i.ids.check.active = True
 
