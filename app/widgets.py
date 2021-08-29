@@ -34,6 +34,7 @@ class CategoryListItem(TwoLineRightIconListItem):
 class ChooseCategoryTitle(OneLineIconListItem):
     pass
 
+
 class OrderLIstItem(OneLineIconListItem):
     """Дополнительно содержит в себе icon и принимает аргументы order_id и
     icon - название/путь к файлу иконки."""
@@ -67,7 +68,6 @@ class OrderContent(MDBoxLayout):
 
 # class ProfileDialogMixin:
 #     pass
-
 
 class ProfileDialogFieldContent(MDBoxLayout):
     """Отображает содержимое выбранного поля в диалоговом окне."""

@@ -29,27 +29,59 @@
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['username'] = self.text
 
-                MDTextField:
-                    hint_text: 'пароль'
-                    helper_text: 'введите пароль'
-                    password: True
-                    helper_text_mode: 'on_focus'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'eye-off'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['password'] = self.text
+                ClickableTextFieldRIcon:
+                    pos_hint: {"center_x": .5, "center_y": .5}
 
-                MDTextField:
-                    hint_text: 'пароль повторно'
-                    helper_text: 'введите пароль повторно'
-                    password: True
-                    helper_text_mode: 'on_focus'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'eye-off'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['re_password'] = self.text
+                    MDTextField:
+                        id: pass_field
+                        hint_text: 'пароль'
+                        helper_text: 'введите пароль'
+                        password: True
+                        helper_text_mode: 'on_focus'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                        required: True
+                        on_text: root.form_data['password'] = self.text
+                        on_focus: 
+                            pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+
+                    MDIconButton:
+                        id: pass_btn
+                        icon: "eye-off"
+                        ripple_scale: .5
+                        pos_hint: {"center_y": .65}
+                        pos: pass_field.width - self.width + dp(3), 0
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, .4 
+                        on_release:
+                            self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                            pass_field.password = False if pass_field.password is True else True
+
+                ClickableTextFieldRIcon:
+                    pos_hint: {"center_x": .5, "center_y": .5}
+
+                    MDTextField:
+                        id: re_pass_field
+                        hint_text: 'пароль повторно'
+                        helper_text: 'введите пароль повторно'
+                        password: True
+                        helper_text_mode: 'on_focus'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                        required: True
+                        on_text: root.form_data['re_password'] = self.text
+                        on_focus: 
+                            re_pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+
+                    MDIconButton:
+                        id: re_pass_btn
+                        icon: "eye-off"
+                        ripple_scale: .5
+                        pos_hint: {"center_y": .65}
+                        pos: re_pass_field.width - self.width + dp(3), 0
+                        theme_text_color: "Custom"
+                        text_color: 0, 0, 0, .4
+                        on_release:
+                            self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                            re_pass_field.password = False if re_pass_field.password is True else True
 
                 MDTextField:
                     hint_text: 'почта'
@@ -57,7 +89,7 @@
                     helper_text_mode: 'on_focus'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                     required: True
-                    icon_right: 'at'
+                    icon_right: 'email'
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['email'] = self.text
 
@@ -65,15 +97,18 @@
                     cols: 2
 
                     MDLabel:
+                        id: cat_field
                         text: 'Тип услуг:'
                         theme_text_color: "Custom"
                         text_color: 0, 0, 0, .4
 
-                    MDIconButton:
+                    MDRoundFlatIconButton:
                         icon: "plus-circle"
-                        user_font_size: "30sp"
+                        text: "изменить"
                         theme_text_color: "Custom"
                         text_color: 0, 0, 0, 0.4
+                        line_color: 0, 0, 0, 0.4
+                        icon_color: 0, 0, 0, 0.4
                         on_release: root.show_dialog()
                 
                 MDGridLayout:     
@@ -96,10 +131,15 @@
                 on_action_button: root.validate_data()
 
 
+<ClickableTextFieldRIcon@MDRelativeLayout>:
+
+
 <CategoryListItem>:
-    text_color: 0, 0, 0, 0.4
+    text_color: 0, 0, 0, .4
+
     IconRightWidget:
         icon: "close"
+
 
 <CategoriesDialogContent>:
     cols: 1

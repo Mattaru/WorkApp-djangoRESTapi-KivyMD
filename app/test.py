@@ -1,26 +1,30 @@
-import json
+from kivy.lang import Builder
+from kivy.properties import StringProperty
 
-import requests
+from kivymd.app import MDApp
+from kivymd.uix.gridlayout import MDGridLayout
 
-data = {
-    'username': 'Nar_mAttaru',
-    'password': 'personaldata',
-    'email': 'mymail@mail.com',
-    'profile': {
-        'role': ['заказчик'],
-        'categories': [
-            {'name': 'Сантехника'},
-            {'name': 'Строительство'}
-        ],
-        'subcategories': [
-            {'name': 'мелкий ремонт'},
-            {"name": "монтаж новой"}
-        ]
-    }
-    
-}
+KV = '''
+<GG>:
+    cols: 2
 
-if __name__ == '__main__':
-    host = 'http://127.0.0.1:8000/auth/users/'
-    r = requests.post(host, json=data)
-    print(r.json())
+    MDLabel:
+        text: 'Тип услуг:'
+        theme_text_color: "Custom"
+
+    MDIconButton:
+        icon: "plus-circle"
+        user_font_size: "30sp"
+'''
+
+
+class GG(MDGridLayout):
+    pass
+
+
+class Test(MDApp):
+    def build(self):
+        return Builder.load_string(KV)
+
+
+Test().run()

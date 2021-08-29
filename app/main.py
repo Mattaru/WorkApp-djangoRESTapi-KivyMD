@@ -1,7 +1,7 @@
 import datetime
 import requests
 
-from kivy.properties import DictProperty, StringProperty
+from kivy.properties import DictProperty, StringProperty, ListProperty
 from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.core.text import LabelBase
@@ -15,6 +15,7 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelThreeLine, MDExpansionPanelOneLine
 from kivymd.uix.gridlayout import MDGridLayout
+from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
@@ -91,6 +92,7 @@ class Registration(Screen):
         """Формирует и проверяет данные для регистрации.
         Если данные валидны, то отправляет запрос на регистрацию,
         в случае успеха - перенаправляет на главнуюс траницу приложения."""
+        print(self.form_data)
         self.make_data_for_send()
         check_data = self.check_form_data()
 
@@ -263,7 +265,7 @@ class Registration(Screen):
                 else:
                     subcat = ''
                 item = CategoryListItem(
-                    text='[size=12][b]' + cat.lower() + '[/b][/size]',
+                    text='[size=14][b]' + cat.capitalize() + '[/b][/size]',
                     secondary_text='[size=12][b]' + subcat.lower() + '[/b][/size]'
                 )
                 self.ids.categories.add_widget(item)
@@ -541,6 +543,7 @@ class ForWorkApp(MDApp):
         Builder.load_file('graphic/main_page.kv')
         Builder.load_file('graphic/profile_card.kv')
 
+        self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = 'Blue'
         self.theme_cls.accent_palette = "Red"
 
