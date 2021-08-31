@@ -1,56 +1,70 @@
 <LogIn>:
     name: 'login'
-    padding: '20dp', '20dp', '20dp', '20dp'
 
     BoxLayout:
         orientation: 'vertical'
 
         MDToolbar:
             title: 'Вход:'
+            left_action_items: [['arrow-left', lambda x: root.go_back()]]
             elevation: 8
             specific_text_color: 1, 1, 1, 1
 
         BoxLayout:
-            size_hint: 1, 0.5
-
-            MDLabel:
-                id: login_title
-                halign: 'center'
-                color: (0, 0, 0, 1)
-                text: root.message
+            size_hint: 1, .5
 
         GridLayout:
-            rows: 2
             cols: 1
-            size_hint: 1, 1
             padding: '20dp', '20dp', '20dp', '20dp'
 
             MDTextField:
                 hint_text: 'логин'
                 helper_text: 'введите имя пользователя'
                 helper_text_mode: 'on_focus'
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                pos_hint: {'center_x': .5, 'center_y': .5}
                 icon_right: 'lead-pencil'
                 icon_right_color: app.theme_cls.primary_color
                 on_text: root.form_data['username'] = self.text
 
+            ClickablePasswordIconField:
+                size_hint_y: None
+                height: '50dp'
+                pos_hint: {"center_x": .5, "center_y": .5}
 
-            MDTextField:
-                hint_text: 'пароль'
-                helper_text: 'введите пароль'
-                helper_text_mode: 'on_focus'
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                password: True
-                icon_right: 'eye-off'
-                icon_right_color: app.theme_cls.primary_color
-                on_text: root.form_data['password'] = self.text
+                MDTextField:
+                    id: re_pass_field
+                    hint_text: 'пароль'
+                    helper_text: 'введите пароль'
+                    password: True
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    required: True
+                    on_text: root.form_data['password'] = self.text
+                    on_focus: 
+                        re_pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+
+                MDIconButton:
+                    id: re_pass_btn
+                    icon: "eye-off"
+                    ripple_scale: .5
+                    pos_hint: {"center_y": .65}
+                    pos: re_pass_field.width - self.width + dp(3), 0
+                    theme_text_color: "Custom"
+                    text_color: 0, 0, 0, .4
+                    on_release:
+                        self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                        re_pass_field.password = False if re_pass_field.password is True else True
 
 
         MDBottomAppBar:
+            md_bg_color: 1, 1, 1, 0
+            
             MDToolbar:
-                left_action_items: [['arrow-left', lambda x: root.go_back()]]
                 mod: 'center'
                 type: 'bottom'
                 icon: 'location-enter'
                 specific_text_color: 1, 1, 1, 1
                 on_action_button: root.validate_data(login_title)
+
+
+<ClickablePasswordIconField@MDRelativeLayout>:

@@ -48,7 +48,6 @@ class ChooseRole(Screen):
 
 
 class LogIn(Screen):
-    message = StringProperty('')
     form_data = DictProperty({})
 
     def validate_data(self, login_title):
@@ -74,34 +73,48 @@ class LogIn(Screen):
 
 class Registration(Screen):
     background_color = [255, 255, 255, 0.6]
-    form_data = DictProperty({})
+    form_data = DictProperty()
     category_list = []
     categories_data = None
     dialog = None
     dialog_content = None 
 
-    def on_enter(self):
-        r = requests.get(settings.HOST_URL + 'categories-list/')
+    def on_pre_enter(self):
+        """Если не выбрана роль 'заказчик', то, перед переходом на экран регистрации, 
+        добавляет блок с функционалом для выбора вида работ."""
+        settings.categories_list = []
+        self.ids.categories_box.clear_widgets()
+        self.ids.categories.clear_widgets()
 
-        if not r.status_code == 200:
-            self.show_err_snackbar('Сервер не доступен.')
-        else:
-            self.categories_data = r.json()
+        if settings.registration_role != 'заказчик': 
+            self.ids.categories_box.add_widget(self.ids.cat_field)
+            self.ids.categories_box.add_widget(self.ids.cat_add_btn)
+
+            r = requests.get(settings.HOST_URL + 'categories-list/')
+
+            if not r.status_code == 200:
+                self.show_err_snackbar('Сервер не доступен.')
+            else:
+                self.categories_data = r.json()
+
+    def on_enter(self):
+        pass
 
     def validate_data(self):
         """Формирует и проверяет данные для регистрации.
         Если данные валидны, то отправляет запрос на регистрацию,
-        в случае успеха - перенаправляет на главнуюс траницу приложения."""
-        print(self.form_data)
+        в случае успеха - перенаправляет на главную страницу приложения."""
+        
         self.make_data_for_send()
-        check_data = self.check_form_data()
+        print(self.form_data)
 
-        if not check_data:
+        if not self.check_form_data():
             return False
 
-        check_password = self.check_password()
+        if not self.check_password():
+            return False
 
-        if not check_password:
+        if not self.check_category():
             return False
 
         settings.make_login_data(
@@ -122,7 +135,6 @@ class Registration(Screen):
                 self.manager.current = 'main_page'
                 self.manager.transition.direction = 'left'
                 self.reset_data()
-
 
     def get_category_data(self, instance, role_label):
         """"Получить данные формы по категории с привязанных кнопок.
@@ -158,6 +170,12 @@ class Registration(Screen):
         if not ('username' in self.form_data.keys()):
             self.show_err_snackbar('Введите логин.')
             return False
+        elif not ('first_name' in self.form_data.keys()):
+            self.show_err_snackbar('Введите имя.')
+            return False
+        elif not ('last_name' in self.form_data.keys()):
+            self.show_err_snackbar('Введите фамилию.')
+            return False
         elif not ('password' in self.form_data.keys()):
             self.show_err_snackbar('Введите пароль.')
             return False
@@ -183,6 +201,16 @@ class Registration(Screen):
             self.show_err_snackbar('Пароль меньше 8 символов.')
             return False
 
+        return True
+
+    def check_category(self):
+        """Проверяет выбрын ли тип предоставляемых услуг,
+         если при входе выбрана роль не заказчика."""
+        if settings.registration_role != 'заказчик':
+            if not self.form_data['profile']['categories']:
+                self.show_err_snackbar('Тип услуг не выбран.')
+                return False
+        
         return True
 
     def send_registration_request(self):
@@ -221,6 +249,13 @@ class Registration(Screen):
         self.manager.current = 'choose_role'
         self.manager.transition.direction = 'right'
 
+    def close_dialog(self, *args):
+        """Закрывает диалоговое окно и сбрасывает значение self.dialog на None."""
+        if self.dialog:
+            self.dialog.dismiss(force=True)
+            self.dialog = None
+            self.dialog_content = None
+
     def show_dialog(self):
         """Открывает диалоговое окно с данными о категориях и подкатегориях."""
         if not self.dialog:   
@@ -245,13 +280,6 @@ class Registration(Screen):
                 ]
             ) 
             self.dialog.open()
-
-    def close_dialog(self, *args):
-        """Закрывает диалоговое окно и сбрасывает значение self.dialog на None."""
-        if self.dialog:
-            self.dialog.dismiss(force=True)
-            self.dialog = None
-            self.dialog_content = None
 
     def select_categories(self, *args):
         """Добавляет список выбранных категорий и подкатегорий на экран регистранции."""
