@@ -1,8 +1,8 @@
 <ProfileCard>:
     orientation: 'vertical'
-    padding: '10dp'
+    padding: '18dp', '20dp'
     size_hint_y: None
-    height: '800dp'
+    height: '650dp'
 
     MDGridLayout:
         cols: 2
@@ -29,10 +29,12 @@
                 MDBoxLayout:
                     orientation: 'horizontal'
                     adaptive_height: True
+
                     MDLabel:
                         id: first_name
                         bold: True
                         font_size: '24dp'
+
                     MDIconButton:
                         icon: 'fountain-pen'
                         user_font_size: '15dp'
@@ -44,10 +46,12 @@
                 MDBoxLayout:
                     orientation: 'horizontal'
                     adaptive_height: True
+
                     MDLabel:
                         id: last_name
                         bold: True
                         font_size: '24dp'
+
                     MDIconButton:
                         icon: 'fountain-pen'
                         user_font_size: '15dp'
@@ -73,138 +77,199 @@
                     on_release: root.show_dialog(phone_number, 'profile.phone_number')
 
     MDGridLayout:
-        cols: 2
-        adaptive_height: True
+        cols: 1
 
         MDBoxLayout:
-            orientation: 'vertical'
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Почта:'
-                font_size: '12dp'
+                font_size: '14dp'
                 bold: True
-                size_hint_y: None
-                height: '30dp'
+                size_hint_x: None
+                width: '50dp'
+
+            MDIconButton:
+                icon: 'fountain-pen'
+                user_font_size: '15dp'
+                size_hint_x: None
+                width: '20dp'
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                on_release: root.show_dialog(email, 'email')
+
+        MDBoxLayout:
+            orientation: 'vertical'
+
             MDLabel:
                 id: email
-                font_size: '14dp'
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            theme_text_color: "Custom"
-            text_color: app.theme_cls.primary_color
-            on_release: root.show_dialog(email, 'email')
+                font_size: '12dp'
 
         MDBoxLayout:
-            orientation: 'vertical'
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Регион:'
-                font_size: '12dp'
+                font_size: '14dp'
                 bold: True
-                size_hint_y: None
-                height: '30dp'
+                size_hint_x: None
+                width: '60dp'
+
+            MDIconButton:
+                icon: 'fountain-pen'
+                user_font_size: '15dp'
+                size_hint_x: None
+                width: '20dp'
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                on_release: root.show_dialog(region, 'profile.region')
+
+        MDBoxLayout:
+            orientation: 'vertical'
+
             MDLabel:
                 id: region
-                font_size: '14dp'
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            theme_text_color: "Custom"
-            text_color: app.theme_cls.primary_color
-            on_release: root.show_dialog(region, 'profile.region')
+                font_size: '12dp'
 
         MDBoxLayout:
-            orientation: 'vertical'
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Город:'
-                font_size: '12dp'
+                font_size: '14dp'
                 bold: True
-                size_hint_y: None
-                height: '30dp'
+                size_hint_x: None
+                width: '50dp'
+
+            MDIconButton:
+                icon: 'fountain-pen'
+                user_font_size: '15dp'
+                size_hint_x: None
+                width: '20dp'
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                on_release: root.show_dialog(city, 'profile.city')
+
+        MDBoxLayout:
+            orientation: 'vertical'
+
             MDLabel:
                 id: city
-                font_size: '14dp'
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            theme_text_color: "Custom"
-            text_color: app.theme_cls.primary_color
-            on_release: root.show_dialog(city, 'profile.city')
+                font_size: '12dp'
 
         MDBoxLayout:
-            orientation: 'vertical'
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Юридическое лицо:'
-                font_size: '12dp'
+                font_size: '14dp'
                 bold: True
-                pos_hint: {'center_x': .5, 'center_y': .5}
-        MDSwitch:
-            id: is_juridical
-            pos_hint: {'bottom': 0}
-            on_release: root.swich_change(self, is_juridical)
+                size_hint_x: None
+                width: '140dp'
+
+            MDBoxLayout:
+                size_hint_x: None
+                width: '60dp'
+
+                MDSwitch:
+                    id: is_juridical
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    on_release: root.swich_change(self, is_juridical)
 
         MDBoxLayout:
-            orientation: 'vertical'
-            adaptive_height: True
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Кратко о своей деятельности:'
-                font_size: '12dp'
-                bold: True
-                size_hint_y: None
-                height: '30dp'
-            MDLabel:
-                id: description
                 font_size: '14dp'
-                adaptive_height: True
+                bold: True
+                size_hint_x: None
+                width: '220dp'
 
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            theme_text_color: "Custom"
-            text_color: app.theme_cls.primary_color
-            on_release: root.show_dialog(description, 'profile.description')
+            MDIconButton:
+                icon: 'fountain-pen'
+                user_font_size: '15dp'
+                size_hint_x: None
+                width: '20dp'
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                on_release: root.show_dialog(description, 'profile.description')
 
         MDBoxLayout:
             orientation: 'vertical'
+            size_hint_y: None
+            height: '200dp'
+
+            ScrollView:
+                bar_inactive_color: 0, 0, 0, .4
+                MDGridLayout:
+                    cols: 1
+                    adaptive_height: True
+                     
+                    MDLabel:
+                        id: description
+                        font_size: '12dp'
+                        adaptive_height: True
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Опыт работы:'
-                font_size: '12dp'
-                bold: True
-                size_hint_y: None
-                height: '30dp'
-            MDLabel:
-                id: work_experience
                 font_size: '14dp'
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            theme_text_color: "Custom"
-            text_color: app.theme_cls.primary_color
-            on_release: root.show_dialog(work_experience, 'profile.work_experience')
+                bold: True
+                size_hint_x: None
+                width: '100dp'
+
+            MDIconButton:
+                icon: 'fountain-pen'
+                user_font_size: '15dp'
+                size_hint_x: None
+                width: '20dp'
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                on_release: root.show_dialog(work_experience, 'profile.work_experience')
 
         MDBoxLayout:
             orientation: 'vertical'
+
+            MDLabel:
+                id: work_experience
+                font_size: '12dp'
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+
             MDLabel:
                 text: 'Область работы:'
-                font_size: '12dp'
+                font_size: '14dp'
                 bold: True
-                size_hint_y: None
-                height: '30dp'
+                size_hint_x: None
+                width: '120dp'
+
+            MDIconButton:
+                icon: 'fountain-pen'
+                user_font_size: '15dp'
+                size_hint_x: None
+                width: '20dp'
+                pos_hint: {'center_x': .5, 'center_y': .5}
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                on_release: root.show_dialog(category, 'profile.category')
+
+        MDBoxLayout:
+            orientation: 'vertical'
+
             MDLabel:
                 id: category
-                font_size: '14dp'
-        MDIconButton:
-            icon: 'fountain-pen'
-            user_font_size: '15dp'
-            pos_hint: {'top': 1}
-            theme_text_color: "Custom"
-            text_color: app.theme_cls.primary_color
-            on_release: root.show_dialog(category, 'profile.category')
+                font_size: '12dp'
 
+        
 <ProfileDialogFieldContent>:
     orientation: "vertical"
     spacing: "12dp"

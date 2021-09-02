@@ -7,34 +7,42 @@ from kivymd.uix.gridlayout import MDGridLayout
 KV = '''
 MDScreen:
 
-    MDBoxLayout:
-        orientation: 'vertical'
+    MDGridLayout:
+        cols: 1
 
-        MDToolbar:
-            title: 'Вход:'
-            left_action_items: [['arrow-left']]
-            elevation: 8
-            specific_text_color: 1, 1, 1, 1
+        MDBoxLayout:
+            orientation: 'horizontal'
 
-        MDGridLayout:
-            cols: 1
-            size_hint: 1, 1
-            padding: '20dp', '20dp', '20dp', '20dp'
+            MDLabel:
+                text: 'Work type:'
+                size_hint: None, 1
+                width: self.text.size
 
-            MDTextField:
-                hint_text: 'логин'
-                helper_text: 'введите имя пользователя'
-                helper_text_mode: 'on_focus'
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                required: True
-                icon_right: 'lead-pencil'
-                icon_right_color: app.theme_cls.primary_color
+            MDIconButton:
+                icon: 'fountain-pen'
+                size_hint_x: None
+                width: '40dp'
+                user_font_size: '15dp'
+                pos_hint: {'center_x': .5, 'center_y': .52}
+                theme_text_color: "Custom"
+                text_color: 1, 0, 1, 1
+
+        MDBoxLayout:
+            orientation: 'vertical'
+
+            MDLabel:
+                text: app.text
 '''
+
+TEXT = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry"s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
+
 
 class GG(MDGridLayout):
     pass
 
 class Test(MDApp):
+    text = TEXT
+
     def build(self):
         return Builder.load_string(KV)
 

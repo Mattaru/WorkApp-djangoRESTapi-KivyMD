@@ -50,7 +50,7 @@ class ChooseRole(Screen):
 class LogIn(Screen):
     form_data = DictProperty({})
 
-    def validate_data(self, login_title):
+    def validate_data(self):
         self.manager.current = 'main_page'
         self.manager.transition.direction = 'left'
     #     """Отправляет запрос с данными на логин в базу и либо дает разрешение на вход в приложение,
@@ -104,9 +104,7 @@ class Registration(Screen):
         """Формирует и проверяет данные для регистрации.
         Если данные валидны, то отправляет запрос на регистрацию,
         в случае успеха - перенаправляет на главную страницу приложения."""
-        
         self.make_data_for_send()
-        print(self.form_data)
 
         if not self.check_form_data():
             return False
@@ -121,7 +119,6 @@ class Registration(Screen):
             self.form_data['username'],
             self.form_data['password']
         )
-        
         r = self.send_registration_request()
 
         if not r.status_code == 201:
@@ -460,15 +457,36 @@ class ProfileCard(MDCard):
         self.ids.first_name.text = data['first_name'] 
         self.ids.last_name.text = data['last_name'] 
         self.ids.email.text = data['email']
-        self.ids.phone_number.text = data['profile']['phone_number']
-        self.ids.description.text = data['profile']['description']
-        self.ids.work_experience.text = data['profile']['work_experience']
-        self.ids.is_juridical.active = data['profile']['is_juridical']
-        self.ids.region.text = data['profile']['region']
-        self.ids.city.text = data['profile']['city']
 
-        if data['profile']['category']:     
-            self.ids.category.text = str(data['profile']['category'])
+        if data['profile']['phone_number']:
+            self.ids.phone_number.text = data['profile']['phone_number']
+        else:
+            self.ids.phone_number.text = 'не указан'
+
+        if data['profile']['description']:
+            self.ids.description.text = data['profile']['description']
+        else:
+            self.ids.description.text = 'пусто'
+
+        if data['profile']['work_experience']:
+            self.ids.work_experience.text = data['profile']['work_experience']
+        else:
+            self.ids.work_experience.text = 'нк указан'
+
+        self.ids.is_juridical.active = data['profile']['is_juridical']
+
+        if data['profile']['region']:
+            self.ids.region.text = data['profile']['region']
+        else:
+            self.ids.region.text = 'не указан'
+
+        if data['profile']['city']:
+            self.ids.city.text = data['profile']['city']
+        else:
+            self.ids.city.text = 'не указан'
+
+        if data['profile']['categories']:     
+            self.ids.category.text = str(data['profile']['categories'])
         
     def show_dialog(self, instance, field_name):
         """Открывает диалоговое окно для смены данных профиля.
