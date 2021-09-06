@@ -73,20 +73,31 @@ class LogIn(Screen):
 
 class Registration(Screen):
     background_color = [255, 255, 255, 0.6]
-    form_data = DictProperty()
     category_list = []
     categories_data = None
     dialog = None
     dialog_content = None 
+    form_data = DictProperty()
+    firm_name = StringProperty()
+    
 
     def on_pre_enter(self):
         """Если не выбрана роль 'заказчик', то, перед переходом на экран регистрации, 
         добавляет блок с функционалом для выбора вида работ."""
         settings.categories_list = []
+        self.ids.registration_box.remove_widget(self.ids.first_name_field)
+        self.ids.registration_box.remove_widget(self.ids.last_name_field)
+        self.ids.registration_box.remove_widget(self.ids.firm_field)
         self.ids.categories_box.clear_widgets()
         self.ids.categories.clear_widgets()
 
-        if settings.registration_role != 'заказчик': 
+        if settings.registration_role == 'исполнитель':
+            self.ids.registration_box.add_widget(self.ids.first_name_field)
+            self.ids.registration_box.add_widget(self.ids.last_name_field)
+            self.ids.categories_box.add_widget(self.ids.cat_field)
+            self.ids.categories_box.add_widget(self.ids.cat_add_btn)
+        elif settings.registration_role == 'фирма':
+            self.ids.categories_box.add_widget(self.ids.firm_field)
             self.ids.categories_box.add_widget(self.ids.cat_field)
             self.ids.categories_box.add_widget(self.ids.cat_add_btn)
 
@@ -145,9 +156,13 @@ class Registration(Screen):
         """Добавляет данные о категориях и роли в общай словарь с информацией для отправки на сервер."""
         self.form_data['profile'] = {
                 'role': [settings.registration_role],
+                'firm': {},
                 'categories': [],
                 'subcategories': []
             }
+
+        if self.firm_name:
+            self.form_data['profile']['firm'] = {'name': self.firm_name }
 
         if settings.categories_list:
             for cat in settings.categories_list:
@@ -166,13 +181,7 @@ class Registration(Screen):
          Если введена не вся информация, то выводится сообщение об ошибке."""
         if not ('username' in self.form_data.keys()):
             self.show_err_snackbar('Введите логин.')
-            return False
-        elif not ('first_name' in self.form_data.keys()):
-            self.show_err_snackbar('Введите имя.')
-            return False
-        elif not ('last_name' in self.form_data.keys()):
-            self.show_err_snackbar('Введите фамилию.')
-            return False
+            return False      
         elif not ('password' in self.form_data.keys()):
             self.show_err_snackbar('Введите пароль.')
             return False
@@ -181,6 +190,12 @@ class Registration(Screen):
             return False
         elif not ('email' in self.form_data.keys()):
             self.show_err_snackbar('Введите почтовый адрес.')
+            return False
+        elif not ('first_name' in self.form_data.keys()):
+            self.show_err_snackbar('Введите имя.')
+            return False
+        elif not ('last_name' in self.form_data.keys()):
+            self.show_err_snackbar('Введите фамилию.')
             return False
         elif not ('profile' in self.form_data.keys()):
             self.show_err_snackbar('Выберите вид работ.')

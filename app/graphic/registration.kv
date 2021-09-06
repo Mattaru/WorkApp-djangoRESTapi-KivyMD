@@ -12,6 +12,7 @@
 
         ScrollView:
             MDGridLayout:
+                id: registration_box
                 cols: 1
                 rows: 10
                 padding: '10dp', '40dp', '10dp', '0dp'
@@ -28,26 +29,6 @@
                     icon_right: 'lead-pencil'
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['username'] = self.text
-
-                MDTextField:
-                    hint_text: 'имя'
-                    helper_text: 'введите ваше имя'
-                    helper_text_mode: 'on_focus'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'lead-pencil'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['first_name'] = self.text
-
-                MDTextField:
-                    hint_text: 'фамилия'
-                    helper_text: 'введите вашу фамилию'
-                    helper_text_mode: 'on_focus'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'lead-pencil'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['last_name'] = self.text
 
                 ClickableTextFieldRIcon:
                     pos_hint: {"center_x": .5, "center_y": .5}
@@ -112,6 +93,39 @@
                     icon_right: 'email'
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['email'] = self.text
+                
+                MDTextField:
+                    id: first_name_field
+                    hint_text: 'имя'
+                    helper_text: 'введите ваше имя'
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    required: True
+                    icon_right: 'lead-pencil'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.form_data['first_name'] = self.text
+
+                MDTextField:
+                    id: last_name_field 
+                    hint_text: 'фамилия'
+                    helper_text: 'введите вашу фамилию'
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    required: True
+                    icon_right: 'lead-pencil'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.form_data['last_name'] = self.text
+
+                MDTextField:
+                    id: firm_field 
+                    hint_text: 'название фирмы'
+                    helper_text: 'введите название фирмы'
+                    helper_text_mode: 'on_focus'
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    required: True
+                    icon_right: 'lead-pencil'
+                    icon_right_color: app.theme_cls.primary_color
+                    on_text: root.firm_name = self.text
 
                 MDGridLayout:
                     id: categories_box
