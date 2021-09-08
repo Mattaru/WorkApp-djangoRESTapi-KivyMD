@@ -80,36 +80,49 @@ class Registration(Screen):
     form_data = DictProperty()
     firm_name = StringProperty()
     
-
     def on_pre_enter(self):
         """Если не выбрана роль 'заказчик', то, перед переходом на экран регистрации, 
         добавляет блок с функционалом для выбора вида работ."""
         settings.categories_list = []
-        self.ids.registration_box.remove_widget(self.ids.first_name_field)
-        self.ids.registration_box.remove_widget(self.ids.last_name_field)
-        self.ids.registration_box.remove_widget(self.ids.firm_field)
-        self.ids.categories_box.clear_widgets()
-        self.ids.categories.clear_widgets()
+        # Sometimes throw error, when trying execute 'remove_widget'
+        if 'first_name_field' in self.ids.keys():
+            self.ids.registration_box.remove_widget(self.ids.first_name_field)
 
-        if settings.registration_role == 'исполнитель':
+        if 'last_name_field' in self.ids.keys():
+            self.ids.registration_box.remove_widget(self.ids.last_name_field)
+
+        if 'firm_field' in self.ids.keys():
+            self.ids.registration_box.remove_widget(self.ids.firm_field)
+
+        if 'categories_title' in self.ids.keys():
+            self.ids.registration_box.remove_widget(self.ids.categories_title)
+
+        if 'categories_box' in self.ids.keys():
+            self.ids.categories.clear_widgets()
+            self.ids.registration_box.remove_widget(self.ids.categories_box)
+        # errorend
+        if settings.registration_role == 'заказчик':
             self.ids.registration_box.add_widget(self.ids.first_name_field)
             self.ids.registration_box.add_widget(self.ids.last_name_field)
-            self.ids.categories_box.add_widget(self.ids.cat_field)
-            self.ids.categories_box.add_widget(self.ids.cat_add_btn)
+        elif settings.registration_role == 'исполнитель':
+            self.ids.registration_box.add_widget(self.ids.first_name_field)
+            self.ids.registration_box.add_widget(self.ids.last_name_field)
+            self.ids.registration_box.add_widget(self.ids.categories_title)
+            self.ids.registration_box.add_widget(self.ids.categories_box)
         elif settings.registration_role == 'фирма':
-            self.ids.categories_box.add_widget(self.ids.firm_field)
-            self.ids.categories_box.add_widget(self.ids.cat_field)
-            self.ids.categories_box.add_widget(self.ids.cat_add_btn)
-
-            r = requests.get(settings.HOST_URL + 'categories-list/')
-
-            if not r.status_code == 200:
-                self.show_err_snackbar('Сервер не доступен.')
-            else:
-                self.categories_data = r.json()
+            self.ids.registration_box.add_widget(self.ids.firm_field)
+            self.ids.registration_box.add_widget(self.ids.categories_title)
+            self.ids.registration_box.add_widget(self.ids.categories_box)
 
     def on_enter(self):
-        pass
+        """Посылает запрос на сервер для получения списка видов и подвидов работ.
+        В случае ошибки вызывает snackbar с оповещением об ошибке."""
+        r = requests.get(settings.HOST_URL + 'categories-list/')
+
+        if not r.status_code == 200:
+            self.show_err_snackbar('Сервер не доступен.')
+        else:
+            self.categories_data = r.json()
 
     def validate_data(self):
         """Формирует и проверяет данные для регистрации.
@@ -191,11 +204,14 @@ class Registration(Screen):
         elif not ('email' in self.form_data.keys()):
             self.show_err_snackbar('Введите почтовый адрес.')
             return False
-        elif not ('first_name' in self.form_data.keys()):
+        elif not ('first_name' in self.form_data.keys()) and settings.registration_role != 'фирма':
             self.show_err_snackbar('Введите имя.')
             return False
-        elif not ('last_name' in self.form_data.keys()):
+        elif not ('last_name' in self.form_data.keys()) and settings.registration_role != 'фирма':
             self.show_err_snackbar('Введите фамилию.')
+            return False
+        elif settings.registration_role == 'фирма' and  not self.firm_name:
+            self.show_err_snackbar('Введите название фирмы.')
             return False
         elif not ('profile' in self.form_data.keys()):
             self.show_err_snackbar('Выберите вид работ.')

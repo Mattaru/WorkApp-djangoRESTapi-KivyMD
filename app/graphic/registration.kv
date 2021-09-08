@@ -14,16 +14,17 @@
             MDGridLayout:
                 id: registration_box
                 cols: 1
-                rows: 10
                 padding: '10dp', '40dp', '10dp', '0dp'
                 size_hint: 1, None
                 spacing: '10dp'
-                height: '700dp'
+                height: '600dp'
 
                 MDTextField:
                     hint_text: 'имя пользователя'
                     helper_text: 'введите имя пользователя'
                     helper_text_mode: 'on_focus'
+                    size_hint_y: None
+                    height: '40dp'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                     required: True
                     icon_right: 'lead-pencil'
@@ -31,6 +32,8 @@
                     on_text: root.form_data['username'] = self.text
 
                 ClickableTextFieldRIcon:
+                    size_hint_y: None
+                    height: '50dp'
                     pos_hint: {"center_x": .5, "center_y": .5}
 
                     MDTextField:
@@ -58,6 +61,8 @@
                             pass_field.password = False if pass_field.password is True else True
 
                 ClickableTextFieldRIcon:
+                    size_hint_y: None
+                    height: '50dp'
                     pos_hint: {"center_x": .5, "center_y": .5}
 
                     MDTextField:
@@ -88,17 +93,21 @@
                     hint_text: 'почта'
                     helper_text: 'введите почту'
                     helper_text_mode: 'on_focus'
+                    size_hint_y: None
+                    height: '40dp'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                     required: True
                     icon_right: 'email'
                     icon_right_color: app.theme_cls.primary_color
                     on_text: root.form_data['email'] = self.text
-                
+
                 MDTextField:
                     id: first_name_field
                     hint_text: 'имя'
                     helper_text: 'введите ваше имя'
                     helper_text_mode: 'on_focus'
+                    size_hint_y: None
+                    height: '40dp'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                     required: True
                     icon_right: 'lead-pencil'
@@ -110,6 +119,8 @@
                     hint_text: 'фамилия'
                     helper_text: 'введите вашу фамилию'
                     helper_text_mode: 'on_focus'
+                    size_hint_y: None
+                    height: '40dp'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                     required: True
                     icon_right: 'lead-pencil'
@@ -121,6 +132,8 @@
                     hint_text: 'название фирмы'
                     helper_text: 'введите название фирмы'
                     helper_text_mode: 'on_focus'
+                    size_hint_y: None
+                    height: '40dp'
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                     required: True
                     icon_right: 'lead-pencil'
@@ -128,9 +141,11 @@
                     on_text: root.firm_name = self.text
 
                 MDGridLayout:
-                    id: categories_box
                     cols: 2
-
+                    id: categories_title
+                    size_hint_y: None
+                    height: '40dp'
+                    
                     MDLabel:
                         id: cat_field
                         text: 'Тип услуг:'
@@ -147,7 +162,8 @@
                         icon_color: 0, 0, 0, 0.4
                         on_release: root.show_dialog()
                 
-                MDGridLayout:     
+                MDGridLayout:
+                    id: categories_box
                     cols: 1
                     size_hint_y: None
                     height: '200dp'
