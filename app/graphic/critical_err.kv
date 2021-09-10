@@ -1,0 +1,30 @@
+<CriticalErr@Screen>:
+    name: 'critical_err'
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: None, None
+        height: '100dp'
+        width: '120dp'
+        spacing: '10dp'
+        pos_hint: {'center_x': .5, 'center_y': .5}
+
+        FitImage:
+            source: 'images/something.jpg'
+            size_hint: None, None
+            height: '120dp'
+            width: '120dp'
+            size_hint_y: None
+            pos_hint: {'top': 1}
+            radius: 8, 8, 8, 8
+
+        MDRoundFlatIconButton:
+            icon: "exit-run"
+            text: "выйти"
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            theme_text_color: "Custom"
+            text_color: 0, 0, 0, 1
+            line_color: 0, 0, 0, 0.4
+            icon_color: 0, 0, 0, 0.4
+            on_release: app.stop()
+   

@@ -6,32 +6,31 @@ from kivymd.uix.gridlayout import MDGridLayout
 
 KV = '''
 MDScreen:
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: None, None
+        height: '100dp'
+        width: '120dp'
+        spacing: '10dp'
+        pos_hint: {'center_x': .5, 'center_y': .5}
 
-    MDGridLayout:
-        cols: 1
+        FitImage:
+            source: 'images/something.jpg'
+            size_hint: None, None
+            height: '120dp'
+            width: '120dp'
+            size_hint_y: None
+            pos_hint: {'top': 1}
+            radius: 8, 8, 8, 8
 
-        MDBoxLayout:
-            orientation: 'horizontal'
-
-            MDLabel:
-                text: 'Work type:'
-                size_hint: None, 1
-                width: self.text.size
-
-            MDIconButton:
-                icon: 'fountain-pen'
-                size_hint_x: None
-                width: '40dp'
-                user_font_size: '15dp'
-                pos_hint: {'center_x': .5, 'center_y': .52}
-                theme_text_color: "Custom"
-                text_color: 1, 0, 1, 1
-
-        MDBoxLayout:
-            orientation: 'vertical'
-
-            MDLabel:
-                text: app.text
+        MDRoundFlatIconButton:
+            icon: "exit-run"
+            text: "выйти"
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            theme_text_color: "Custom"
+            text_color: 0, 0, 0, 1
+            line_color: 0, 0, 0, 0.4
+            icon_color: 0, 0, 0, 0.4
 '''
 
 TEXT = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry"s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'

@@ -84,35 +84,38 @@ class Registration(Screen):
         """Если не выбрана роль 'заказчик', то, перед переходом на экран регистрации, 
         добавляет блок с функционалом для выбора вида работ."""
         settings.categories_list = []
-        # Sometimes throw error, when trying execute 'remove_widget'
-        if 'first_name_field' in self.ids.keys():
-            self.ids.registration_box.remove_widget(self.ids.first_name_field)
+        try:
+            # Sometimes throw error, when trying execute 'remove_widget'
+            if 'first_name_field' in self.ids.keys():
+                self.ids.field_box.remove_widget(self.ids.first_name_field)
 
-        if 'last_name_field' in self.ids.keys():
-            self.ids.registration_box.remove_widget(self.ids.last_name_field)
+            if 'last_name_field' in self.ids.keys():
+                self.ids.field_box.remove_widget(self.ids.last_name_field)
 
-        if 'firm_field' in self.ids.keys():
-            self.ids.registration_box.remove_widget(self.ids.firm_field)
-
-        if 'categories_title' in self.ids.keys():
-            self.ids.registration_box.remove_widget(self.ids.categories_title)
-
-        if 'categories_box' in self.ids.keys():
+            if 'firm_field' in self.ids.keys():
+                self.ids.field_box.remove_widget(self.ids.firm_field)
+            # errorend
+            self.ids.categories_title.remove_widget(self.ids.cat_field)
+            self.ids.categories_title.remove_widget(self.ids.cat_add_btn)
             self.ids.categories.clear_widgets()
-            self.ids.registration_box.remove_widget(self.ids.categories_box)
-        # errorend
-        if settings.registration_role == 'заказчик':
-            self.ids.registration_box.add_widget(self.ids.first_name_field)
-            self.ids.registration_box.add_widget(self.ids.last_name_field)
-        elif settings.registration_role == 'исполнитель':
-            self.ids.registration_box.add_widget(self.ids.first_name_field)
-            self.ids.registration_box.add_widget(self.ids.last_name_field)
-            self.ids.registration_box.add_widget(self.ids.categories_title)
-            self.ids.registration_box.add_widget(self.ids.categories_box)
-        elif settings.registration_role == 'фирма':
-            self.ids.registration_box.add_widget(self.ids.firm_field)
-            self.ids.registration_box.add_widget(self.ids.categories_title)
-            self.ids.registration_box.add_widget(self.ids.categories_box)
+
+            if settings.registration_role == 'заказчик':
+                self.ids.field_box.add_widget(self.ids.first_name_field)
+                self.ids.field_box.add_widget(self.ids.last_name_field)
+            if settings.registration_role == 'исполнитель':
+                self.ids.field_box.add_widget(self.ids.first_name_field)
+                self.ids.field_box.add_widget(self.ids.last_name_field)
+                self.ids.categories_title.add_widget(self.ids.cat_field)
+                self.ids.categories_title.add_widget(self.ids.cat_add_btn)
+            elif settings.registration_role == 'фирма':
+                self.ids.field_box.add_widget(self.ids.firm_field)
+                self.ids.categories_title.add_widget(self.ids.cat_field)
+                self.ids.categories_title.add_widget(self.ids.cat_add_btn)
+        except Exception as e:
+            print(e)
+            self.show_err_snackbar('Перезапустите приложение.')
+            self.manager.current = 'critical_err'
+            self.manager.transition.direction = 'right'
 
     def on_enter(self):
         """Посылает запрос на сервер для получения списка видов и подвидов работ.
@@ -407,8 +410,6 @@ class ChooseCategoriesContent(OneLineIconListItem):
             index = settings.categories_list.index(category)
             settings.categories_list.pop(index)
 
-        print(f'categories: {settings.categories_list}')
-
     def get_cat_name(self, text):
         """Обрабатывает текстовое поля виджета и возвращает название категории или подкатегории."""
         name = text.split('[')[1].split(']')[1]
@@ -619,15 +620,13 @@ class ForWorkApp(MDApp):
         Builder.load_file('graphic/registration.kv')
         Builder.load_file('graphic/main_page.kv')
         Builder.load_file('graphic/profile_card.kv')
+        Builder.load_file('graphic/critical_err.kv')
 
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = 'Blue'
         self.theme_cls.accent_palette = "Red"
 
         return Builder.load_file('App.kv')
-
-    def test(self):
-        pass
 
 
 if __name__ == '__main__':

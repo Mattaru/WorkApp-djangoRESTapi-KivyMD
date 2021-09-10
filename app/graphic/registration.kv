@@ -19,126 +19,131 @@
                 spacing: '10dp'
                 height: '600dp'
 
-                MDTextField:
-                    hint_text: 'имя пользователя'
-                    helper_text: 'введите имя пользователя'
-                    helper_text_mode: 'on_focus'
-                    size_hint_y: None
-                    height: '40dp'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'lead-pencil'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['username'] = self.text
-
-                ClickableTextFieldRIcon:
-                    size_hint_y: None
-                    height: '50dp'
-                    pos_hint: {"center_x": .5, "center_y": .5}
+                MDBoxLayout:
+                    id: field_box
+                    orientation: 'vertical'
+                    adaptive_height: True
 
                     MDTextField:
-                        id: pass_field
-                        hint_text: 'пароль'
-                        helper_text: 'введите пароль'
-                        password: True
+                        hint_text: 'имя пользователя'
+                        helper_text: 'введите имя пользователя'
                         helper_text_mode: 'on_focus'
+                        size_hint_y: None
+                        height: '40dp'
                         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                         required: True
-                        on_text: root.form_data['password'] = self.text
-                        on_focus: 
-                            pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+                        icon_right: 'lead-pencil'
+                        icon_right_color: app.theme_cls.primary_color
+                        on_text: root.form_data['username'] = self.text
 
-                    MDIconButton:
-                        id: pass_btn
-                        icon: "eye-off"
-                        ripple_scale: .5
-                        pos_hint: {"center_y": .65}
-                        pos: pass_field.width - self.width + dp(3), 0
-                        theme_text_color: "Custom"
-                        text_color: 0, 0, 0, .4 
-                        on_release:
-                            self.icon = "eye" if self.icon == "eye-off" else "eye-off"
-                            pass_field.password = False if pass_field.password is True else True
+                    ClickableTextFieldRIcon:
+                        size_hint_y: None
+                        height: '50dp'
+                        pos_hint: {"center_x": .5, "center_y": .5}
 
-                ClickableTextFieldRIcon:
-                    size_hint_y: None
-                    height: '50dp'
-                    pos_hint: {"center_x": .5, "center_y": .5}
+                        MDTextField:
+                            id: pass_field
+                            hint_text: 'пароль'
+                            helper_text: 'введите пароль'
+                            password: True
+                            helper_text_mode: 'on_focus'
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                            required: True
+                            on_text: root.form_data['password'] = self.text
+                            on_focus: 
+                                pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+
+                        MDIconButton:
+                            id: pass_btn
+                            icon: "eye-off"
+                            ripple_scale: .5
+                            pos_hint: {"center_y": .65}
+                            pos: pass_field.width - self.width + dp(3), 0
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, .4 
+                            on_release:
+                                self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                                pass_field.password = False if pass_field.password is True else True
+
+                    ClickableTextFieldRIcon:
+                        size_hint_y: None
+                        height: '50dp'
+                        pos_hint: {"center_x": .5, "center_y": .5}
+
+                        MDTextField:
+                            id: re_pass_field
+                            hint_text: 'пароль повторно'
+                            helper_text: 'введите пароль повторно'
+                            password: True
+                            helper_text_mode: 'on_focus'
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                            required: True
+                            on_text: root.form_data['re_password'] = self.text
+                            on_focus: 
+                                re_pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+
+                        MDIconButton:
+                            id: re_pass_btn
+                            icon: "eye-off"
+                            ripple_scale: .5
+                            pos_hint: {"center_y": .65}
+                            pos: re_pass_field.width - self.width + dp(3), 0
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, .4
+                            on_release:
+                                self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                                re_pass_field.password = False if re_pass_field.password is True else True
 
                     MDTextField:
-                        id: re_pass_field
-                        hint_text: 'пароль повторно'
-                        helper_text: 'введите пароль повторно'
-                        password: True
+                        hint_text: 'почта'
+                        helper_text: 'введите почту'
                         helper_text_mode: 'on_focus'
+                        size_hint_y: None
+                        height: '40dp'
                         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                         required: True
-                        on_text: root.form_data['re_password'] = self.text
-                        on_focus: 
-                            re_pass_btn.text_color = app.theme_cls.primary_color if self.focus else (0, 0, 0, .4)
+                        icon_right: 'email'
+                        icon_right_color: app.theme_cls.primary_color
+                        on_text: root.form_data['email'] = self.text
 
-                    MDIconButton:
-                        id: re_pass_btn
-                        icon: "eye-off"
-                        ripple_scale: .5
-                        pos_hint: {"center_y": .65}
-                        pos: re_pass_field.width - self.width + dp(3), 0
-                        theme_text_color: "Custom"
-                        text_color: 0, 0, 0, .4
-                        on_release:
-                            self.icon = "eye" if self.icon == "eye-off" else "eye-off"
-                            re_pass_field.password = False if re_pass_field.password is True else True
+                    MDTextField:
+                        id: first_name_field
+                        hint_text: 'имя'
+                        helper_text: 'введите ваше имя'
+                        helper_text_mode: 'on_focus'
+                        size_hint_y: None
+                        height: '40dp'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                        required: True
+                        icon_right: 'lead-pencil'
+                        icon_right_color: app.theme_cls.primary_color
+                        on_text: root.form_data['first_name'] = self.text
 
-                MDTextField:
-                    hint_text: 'почта'
-                    helper_text: 'введите почту'
-                    helper_text_mode: 'on_focus'
-                    size_hint_y: None
-                    height: '40dp'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'email'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['email'] = self.text
+                    MDTextField:
+                        id: last_name_field 
+                        hint_text: 'фамилия'
+                        helper_text: 'введите вашу фамилию'
+                        helper_text_mode: 'on_focus'
+                        size_hint_y: None
+                        height: '40dp'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                        required: True
+                        icon_right: 'lead-pencil'
+                        icon_right_color: app.theme_cls.primary_color
+                        on_text: root.form_data['last_name'] = self.text
 
-                MDTextField:
-                    id: first_name_field
-                    hint_text: 'имя'
-                    helper_text: 'введите ваше имя'
-                    helper_text_mode: 'on_focus'
-                    size_hint_y: None
-                    height: '40dp'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'lead-pencil'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['first_name'] = self.text
-
-                MDTextField:
-                    id: last_name_field 
-                    hint_text: 'фамилия'
-                    helper_text: 'введите вашу фамилию'
-                    helper_text_mode: 'on_focus'
-                    size_hint_y: None
-                    height: '40dp'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'lead-pencil'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.form_data['last_name'] = self.text
-
-                MDTextField:
-                    id: firm_field 
-                    hint_text: 'название фирмы'
-                    helper_text: 'введите название фирмы'
-                    helper_text_mode: 'on_focus'
-                    size_hint_y: None
-                    height: '40dp'
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    required: True
-                    icon_right: 'lead-pencil'
-                    icon_right_color: app.theme_cls.primary_color
-                    on_text: root.firm_name = self.text
+                    MDTextField:
+                        id: firm_field 
+                        hint_text: 'название фирмы'
+                        helper_text: 'введите название фирмы'
+                        helper_text_mode: 'on_focus'
+                        size_hint_y: None
+                        height: '40dp'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                        required: True
+                        icon_right: 'lead-pencil'
+                        icon_right_color: app.theme_cls.primary_color
+                        on_text: root.firm_name = self.text
 
                 MDGridLayout:
                     cols: 2
