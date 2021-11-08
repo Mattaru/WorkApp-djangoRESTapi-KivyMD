@@ -4,79 +4,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import Category, Comment, Order,  Message, Profile, RoleChoices, SubCategory
+from .models import Category, Comment, Order, Firm,  Message, Profile, RoleChoices, SubCategory
 from core.handlers import create_user, fill_user_profile
-
-
-class SubCategoryCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SubCategory
-        fields = ['name']
-
-
-class CategoryListSerializer(serializers.ModelSerializer):
-    subcategories = SubCategoryCreateSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Category
-        fields = ['name', 'subcategories']
-
-
-class CategoryCreateSerializer(serializers.ModelSerializer):
-    subcategories = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
-
-    class Meta:
-        model = Category
-        fields = ['name', 'subcategories']
-
-
-class ProfileCreateSerializer(serializers.ModelSerializer):
-    role = serializers.MultipleChoiceField(choices=RoleChoices)
-    categories = CategoryCreateSerializer(many=True, read_only=False, required=True)
-
-    class Meta:
-        model = Profile
-        fields = ['role', 'categories']
-
-
-class UserCreateSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(allow_blank=False, validators=[
-        UniqueValidator(queryset=User.objects.all())])
-    profile = ProfileCreateSerializer(required=False)
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'password', 'email', 'profile']
-
-    def create(self, validated_data):
-        
-        user = create_user(validated_data)
-        profile_data = validated_data.pop('profile')
-        fill_user_profile(profile_data, user)
-        category_data = profile_data.pop('category')
-
-        for cat in category_data:
-
-            try:
-                category = Category.objects.get(name=cat['name'])
-            except Category.DoesNotExist:
-                category = Category.objects.create(name=cat['name'])
-
-            user.profile.category.add(category)
-
-            if 'subcategory' in cat.keys():
-
-                for subcat in cat['subcategory']:
-                    
-                    try:
-                        subcategory = SubCategory.objects.get(name=subcat['name'])
-                    except SubCategory.DoesNotExist:
-                        subcategory = SubCategory.objects.create(category=category, name=subcat['name'])
-  
-                    user.profile.subcategory.add(subcategory)
-
-        return user
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -94,6 +23,38 @@ class SubCategorySerializer(serializers.ModelSerializer):
         fields = ['name', 'category']
 
 
+class SubCategoryCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SubCategory
+        fields = ['name']
+
+
+class CategoryCreateSerializer(serializers.ModelSerializer):
+    subcategories = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
+
+    class Meta:
+        model = Category
+        fields = ['name', 'subcategories']
+
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    subcategories = SubCategoryCreateSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['name', 'subcategories']
+
+
+class FirmCreateSerializer(serializers.ModelSerializer):
+    categories = CategoryCreateSerializer(many=True, read_only=False, required=False)
+    subcategories = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
+
+    class Meta:
+        model = Firm
+        fields = ['name', 'categories', 'subcategories']
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     role = serializers.MultipleChoiceField(choices=RoleChoices)
     categories = CategorySerializer(many=True, read_only=True)
@@ -105,14 +66,15 @@ class ProfileSerializer(serializers.ModelSerializer):
          'categories', 'subcategories', 'region', 'city', 'is_juridical']
 
 
-class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(allow_blank=False, validators=[
-        UniqueValidator(queryset=User.objects.all())])
-    profile = ProfileSerializer(required=False)
+class ProfileCreateSerializer(serializers.ModelSerializer):
+    role = serializers.MultipleChoiceField(choices=RoleChoices)
+    firm = FirmCreateSerializer(many=False, read_only=False, required=False)
+    categories = CategoryCreateSerializer(many=True, read_only=False, required=False)
+    subcategories = SubCategoryCreateSerializer(many=True, read_only=False, required=False)
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'profile']
+        model = Profile
+        fields = ['role', 'firm', 'categories', 'subcategories']
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -131,6 +93,72 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['avatar', 'role', 'phone_number', 'description', 'work_experience',
          'categories', 'subcategories', 'region', 'city', 'is_juridical']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(allow_blank=False, validators=[
+        UniqueValidator(queryset=User.objects.all())])
+    profile = ProfileSerializer(required=False)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'profile']
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(max_length=255, required=False)
+    last_name = serializers.CharField(max_length=255, required=False)
+    email = serializers.EmailField(allow_blank=False, validators=[
+        UniqueValidator(queryset=User.objects.all())])
+    profile = ProfileCreateSerializer(required=False)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'profile']
+
+    def create(self, validated_data):
+        
+        user = create_user(validated_data)
+        profile_data = validated_data.pop('profile')
+        fill_user_profile(profile_data, user)
+        category_data = profile_data.pop('categories')
+        subcategory_data = profile_data.pop('subcategories')
+        firm_data = profile_data.pop('firm')
+        
+        if firm_data:
+            try:
+                firm = Firm.objects.get(name=firm_data['name'])
+            except Firm.DoesNotExist: 
+                firm = Firm.objects.create(name=firm_data['name'])
+
+            user.profile.firm = firm
+            user.profile.save()
+        
+        if category_data:
+            for cat in category_data:
+                try:
+                    category = Category.objects.get(name=cat['name'])
+                except Category.DoesNotExist:
+                    category = Category.objects.create(name=cat['name'])
+
+                if firm_data:
+                    user.profile.firm.categories.add(category)   
+                else:
+                    user.profile.categories.add(category)
+
+        if subcategory_data:
+            for subcat in subcategory_data:
+                try:
+                    subcategory = SubCategory.objects.get(name=subcat['name'])
+                except SubCategory.DoesNotExist:
+                    subcategory = SubCategory.objects.create(category=category, name=subcat['name'])
+                
+                if firm_data:
+                    user.profile.firm.subcategories.add(subcategory)
+                else:
+                    user.profile.subcategories.add(subcategory)
+
+        return user
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

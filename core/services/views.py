@@ -26,16 +26,6 @@ class CatategoriesListView(ListAPIView):
     serializer_class = CategoryListSerializer
 
 
-# class CatategoriesListView(ObjectMultipleModelAPIView):
-#     def get_querylist(self):
-#         querylist = [
-#             {'queryset': Category.objects.all(), 'serializer_class': CategoryListSerializer},
-#             {'queryset': SubCategory.objects.all(), 'serializer_class': SubCategorySerializer},
-#         ]
-
-#         return querylist
-
-
 class OrderListView(ObjectMultipleModelAPIView):
     permission_classes = [IsAuthenticated]
 

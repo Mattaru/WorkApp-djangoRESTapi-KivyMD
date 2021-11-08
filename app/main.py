@@ -84,6 +84,8 @@ class Registration(Screen):
         """Если не выбрана роль 'заказчик', то, перед переходом на экран регистрации, 
         добавляет блок с функционалом для выбора вида работ."""
         settings.categories_list = []
+
+        # something bad
         try:
             # Sometimes throw error, when trying execute 'remove_widget'
             if 'first_name_field' in self.ids.keys():

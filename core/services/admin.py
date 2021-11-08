@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Comment, Message, Order, Profile, SubCategory 
+from .models import (Category, Comment, Firm, Message, ObjectForSale, Order, Profile, SubCategory )
 
 
 @admin.register(Category)
@@ -13,9 +13,20 @@ class CommentAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Firm)
+class FirmAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(ObjectForSale)
+class ObjectForSaleAdmin(admin.ModelAdmin):
+    pass
+
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
